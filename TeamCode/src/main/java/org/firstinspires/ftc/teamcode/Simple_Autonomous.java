@@ -37,11 +37,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 /**
@@ -59,7 +58,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp(name="MyBlocks", group="Linear Opmode")
 // @Disabled
-public class MyBlocks extends LinearOpMode {
+public class Simple_Autonomous extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -293,4 +292,6 @@ public class MyBlocks extends LinearOpMode {
         }
     }
 }
+
+
 
