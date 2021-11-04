@@ -166,6 +166,7 @@ public class MoveInAllDirections extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "(%.2f)", xAxis);
             telemetry.update();
+
         }
     }
 }
