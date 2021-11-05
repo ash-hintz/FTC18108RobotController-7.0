@@ -55,9 +55,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Simple_Autonomous", group="Linear Autonomous")
+@Autonomous(name="RedLeft")
 // @Disabled
-public class Simple_Autonomous extends LinearOpMode {
+public class RedLeft extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -65,19 +65,37 @@ public class Simple_Autonomous extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
+    private DcMotor motorA = null;
+    private DcMotor motorC = null;
     private Servo servo;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle;
 
-    public void MoveTank(double lPower, double rPower) {
+
+    public void MoveTank(double lPower, double rPower, double degrees) {
+
         double leftPower = lPower;
         double rightPower = rPower;
+        double Distance = degrees;
 
-        motor0.setPower(leftPower * 0.4);
-        motor1.setPower(rightPower * -0.4);
-        motor2.setPower(leftPower * 0.4);
-        motor3.setPower(rightPower * -0.4);
+        double motorDistance = ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition())/4);
+
+        while (motorDistance < Distance) {
+            motor0.setPower(leftPower);
+            motor1.setPower(rightPower);
+            motor2.setPower(leftPower);
+            motor3.setPower(rightPower);
+
+            if (motorDistance >= Distance) {
+                motor0.setPower(0);
+                motor1.setPower(0);
+                motor2.setPower(0);
+                motor3.setPower(0);
+                break;
+            }
+
+        }
     }
 
     public double getAngle () {
@@ -125,20 +143,20 @@ public class Simple_Autonomous extends LinearOpMode {
             while (true) {
                 double current_gyro_angle = getAngle();
                 if ((current_gyro_angle) >= stop_angle) {
-                    MoveTank(0, 0);
+                    MoveTank(0, 0, 0);
                     break;
                 }
                 if (current_gyro_angle >= (stop_angle - decel_angle)) {
                     double calc = (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
                     double new_speed = my_speed * calc;
-                    if (new_speed > 1) {
-                        MoveTank(new_speed, (-1 * new_speed));
+                    if (new_speed > 0) {
+                        MoveTank(new_speed, (-1 * new_speed), my_angle);
                     } else {
-                        MoveTank(1, -1);
+                        MoveTank(1, -1, my_angle);
                     }
                 }
                 else {
-                    MoveTank(my_speed, -1 * my_speed);
+                    MoveTank(my_speed, -1 * my_speed, my_angle);
                 }
             }
         }
@@ -147,21 +165,21 @@ public class Simple_Autonomous extends LinearOpMode {
             while (true) {
                 double current_gyro_angle = getAngle();
                 if ((current_gyro_angle) <= stop_angle) {
-                    MoveTank(0, 0);
+                    MoveTank(0, 0, my_angle);
                     break;
                 }
                 if (current_gyro_angle <= (stop_angle + decel_angle)) {
                     double calc = -1 * (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
                     double new_speed = my_speed * calc;
                     if (new_speed > 1) {
-                        MoveTank((-1 * new_speed), new_speed);
+                        MoveTank((-1 * new_speed), new_speed, my_angle);
                     }
                     else {
-                        MoveTank(-1, 1);
+                        MoveTank(-1, 1, my_angle);
                     }
                 }
                 else {
-                    MoveTank(-1 * my_speed, my_speed);
+                    MoveTank(-1 * my_speed, my_speed, my_angle);
                 }
             }
         }
@@ -179,13 +197,6 @@ public class Simple_Autonomous extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        motor0.setDirection(DcMotor.Direction.FORWARD);
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor2.setDirection(DcMotor.Direction.FORWARD);
-        motor3.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -242,10 +253,8 @@ public class Simple_Autonomous extends LinearOpMode {
 
         // Setup variables used during driving loop
         // Drive wheel power to set motor speed and display telemetry
-        boolean liftUp = false;
-        boolean liftDown = false;
-        boolean intakeOn = false;
-        double liftPower;
+        boolean carouselOn = false;
+        double carouselPower;
         double intakePower;
         boolean toggleDriving; // True = Car Mode, False = Tank Mode
         double leftWheelPower;
@@ -255,8 +264,9 @@ public class Simple_Autonomous extends LinearOpMode {
         double xAxis;
         double yAxis;
         // run until the end of the match (driver presses STOP)
-        MoveTank(1,1);
-        sleep(1000);
+            MoveTank(0.5,0.5, 20000);
+            MoveTank(-0.5,0.5, 2500);
+            MoveTank(0.5,0.5, 2000);
     }
 }
 
