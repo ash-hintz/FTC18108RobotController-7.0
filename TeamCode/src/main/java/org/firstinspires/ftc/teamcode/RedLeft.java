@@ -73,7 +73,20 @@ public class RedLeft extends LinearOpMode {
     double globalAngle;
 
 
-    public void MoveTank(double lPower, double rPower, double degrees) {
+    public void MoveTankUnlimited(double lPower, double rPower) {
+
+        double leftPower = lPower;
+        double rightPower = rPower;
+        while (true) {
+            motor0.setPower(leftPower);
+            motor1.setPower(rightPower);
+            motor2.setPower(leftPower);
+            motor3.setPower(rightPower);
+        }
+    }
+
+
+    public void MoveTankDegrees(double lPower, double rPower, double degrees) {
 
         double leftPower = lPower;
         double rightPower = rPower;
@@ -94,8 +107,11 @@ public class RedLeft extends LinearOpMode {
                 motor3.setPower(0);
                 break;
             }
-
         }
+    }
+
+    public void WheelShutDown() {
+        MoveTankUnlimited(0, 0);
     }
 
     public double getAngle () {
@@ -118,68 +134,49 @@ public class RedLeft extends LinearOpMode {
     }
 
     // TurnTankGyro
-    public void TurnTankGyro(int Angle, int Speed) {
+    public void TurnTankGyro(double Angle, double Speed) {
         // By: Anirudh Jagannathan
 
-        // IN THIS MYBLOCK, SPEED MUST ALWAYS BE POSITIVE!!!
+        // IN THIS METHOD, SPEED MUST ALWAYS BE POSITIVE!!!
         // Degrees can be negative or positive
-
-        double power = -0.4;
-        double motorDistance = 5000;
-        double correction = 0;
 
         double my_speed = Speed;
         double my_angle = Angle;
         double start_angle = getAngle();
         double stop_angle = (start_angle + my_angle);
-        double decel_angle = my_speed * 2.4;
-        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         if (my_angle >= 0) {
-            // Turning right
+            MoveTankDegrees(0.3, 0.3, 5);
+            // Turning left
+            MoveTankUnlimited(-1 * my_speed, my_speed);
+
             while (true) {
                 double current_gyro_angle = getAngle();
+                MoveTankDegrees(0.3, 0.3, 5);
                 if ((current_gyro_angle) >= stop_angle) {
-                    MoveTank(0, 0, 0);
+                    MoveTankDegrees(0.3, 0.3, 5);
+                    WheelShutDown();
                     break;
                 }
-                if (current_gyro_angle >= (stop_angle - decel_angle)) {
-                    double calc = (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
-                    double new_speed = my_speed * calc;
-                    if (new_speed > 0) {
-                        MoveTank(new_speed, (-1 * new_speed), my_angle);
-                    } else {
-                        MoveTank(1, -1, my_angle);
-                    }
-                }
+
                 else {
-                    MoveTank(my_speed, -1 * my_speed, my_angle);
+                    MoveTankUnlimited(my_speed, -1 * my_speed);
                 }
             }
         }
+
         else {
-            // Turning left
+            // Turning right
+            MoveTankUnlimited(-1 * my_speed, my_speed);
             while (true) {
                 double current_gyro_angle = getAngle();
                 if ((current_gyro_angle) <= stop_angle) {
-                    MoveTank(0, 0, my_angle);
+                    MoveTankUnlimited(0, 0);
                     break;
                 }
-                if (current_gyro_angle <= (stop_angle + decel_angle)) {
-                    double calc = -1 * (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
-                    double new_speed = my_speed * calc;
-                    if (new_speed > 1) {
-                        MoveTank((-1 * new_speed), new_speed, my_angle);
-                    }
-                    else {
-                        MoveTank(-1, 1, my_angle);
-                    }
-                }
+
                 else {
-                    MoveTank(-1 * my_speed, my_speed, my_angle);
+                    MoveTankUnlimited(-1 * my_speed, my_speed);
                 }
             }
         }
@@ -264,9 +261,7 @@ public class RedLeft extends LinearOpMode {
         double xAxis;
         double yAxis;
         // run until the end of the match (driver presses STOP)
-            MoveTank(0.5,0.5, 20000);
-            MoveTank(-0.5,0.5, 2500);
-            MoveTank(0.5,0.5, 2000);
+            MoveTankDegrees(0.3, 0.3, 1);
     }
 }
 
