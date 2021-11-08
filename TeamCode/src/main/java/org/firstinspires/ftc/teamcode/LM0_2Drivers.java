@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,7 +36,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -53,25 +50,46 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Test_My_Lift", group="Linear Opmode")
-@Disabled
-public class Test_My_Lift extends LinearOpMode {
+@TeleOp(name="LM0_2Drivers")
+// @Disabled
+public class LM0_2Drivers extends LinearOpMode {
+
+    // Declare OpMode members
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor motor0 = null;
+    private DcMotor motor1 = null;
+    private DcMotor motor2 = null;
+    private DcMotor motor3 = null;
+    // private DcMotor motorA = null;
+    private DcMotor motorC = null;
+    // private Servo servoA;
 
     // Define Servo class members
     static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
     static final double MAX_POS     =  1.0;     // Maximum rotational position
     static final double MIN_POS     =  0.0;     // Minimum rotational position
-    private Servo servo;
     double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
-    boolean rampUp = true;
 
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor1, motor2, motorA, motorB;
-    private BNO055IMU imu;
-    Orientation lastAngles = new Orientation();
-    double globalAngle;
+    // Variables to detect buttons pressed
+    boolean gp2ButtonAPressed;
+    boolean gp2ButtonBPressed;
+    boolean gp2ButtonXPressed;
+    boolean gp2ButtonYPressed;
+
+    // Setup variables used during driving loop
+    // Drive wheel power to set motor speed and display telemetry
+    double leftPower;
+    double rightPower;
+    double armPower;
+    double carouselPower = -1.0;
+
+    // Local variable to control Arm / Carousel / Class
+    boolean armIsMoving = false;
+    int armFloor = 0;
+    int armShippingHubL1 = 200;
+    int armShippingHubL2 = 600;
+    int armShippingHubL3 = 1000;
 
     @Override
     public void runOpMode() {
@@ -79,86 +97,81 @@ public class Test_My_Lift extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
+        motor0  = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
-        motorA = hardwareMap.get(DcMotor.class, "motorA");
-        motorB = hardwareMap.get(DcMotor.class, "motorB");
-        servo = hardwareMap.get(Servo.class, "wobbleGrip");
+        motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        // motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorC = hardwareMap.get(DcMotor.class, "motorC");
+        // servoA = hardwareMap.get(Servo.class, "claw");
 
-        // Setup IMU configurations
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
-        telemetry.update();
-
-        // Setup DC Motor configurations
         // Most robots need the motor on one side to be reversed to drive forward
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor2.setDirection(DcMotor.Direction.FORWARD);
-        motorA.setDirection(DcMotor.Direction.FORWARD);
-        motorB.setDirection(DcMotor.Direction.FORWARD);
+        // Reverse the motor that runs backwards when connected directly to the battery
+        motor0.setDirection(DcMotor.Direction.REVERSE);
+        motor1.setDirection(DcMotor.Direction.FORWARD);
+        motor2.setDirection(DcMotor.Direction.REVERSE);
+        motor3.setDirection(DcMotor.Direction.FORWARD);
+        // motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorC.setDirection(DcMotor.Direction.FORWARD);
 
+        motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        // make sure the IMU gyro is calibrated before continuing.
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
-
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Encoders:", "MA:%3d MB:%3d",
-                motorA.getCurrentPosition(),
-                motorB.getCurrentPosition());
-
-        telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
-        telemetry.update();
+        // motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        double yAxis = 0.0;
-        double motorAPower = 0.0;
-        double xAxis = 0.0;
-        double motorBPower = 0.0;
-
-        // Send power to motors
-        motorA.setPower(0.0);
-        motorB.setPower(0.0);
-
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
-            yAxis = gamepad1.left_stick_y;
-            motorAPower = 1.0 * Range.clip(yAxis, -1.0, 1.0);
+            // POV Mode uses left stick to go forward, and right stick to turn.
+            // - This uses basic math to combine motions and is easier to drive straight.
+            double drive = gamepad1.left_stick_y;
+            double turn = -gamepad1.right_stick_x;
+            leftPower = 0.5 * Range.clip(drive + turn, -1.0, 1.0);
+            rightPower = 0.5 * Range.clip(drive - turn, -1.0, 1.0);
 
-            xAxis = gamepad1.right_stick_y;
-            motorBPower = 1.0 * Range.clip(xAxis, -1.0, 1.0);
+            // Send calculated power to wheels
+            motor0.setPower(leftPower);
+            motor1.setPower(rightPower);
+            motor2.setPower(leftPower);
+            motor3.setPower(rightPower);
 
-            // Send power to Lift motor or RingIntake motor
-            if ((motorA.getCurrentPosition() <= -1600) && (motorAPower < 0))
+            // Set arm height
+            /*
+            double armJoyStick = gamepad2.right_stick_y;
+            armPower = Range.clip(armJoyStick, -1.0, 1.0);
+            if ((motorA.getCurrentPosition() >= 1000) && (armPower >= 0))
+                motorA.setPower(0.0);
+            else if ((motorA.getCurrentPosition() <= 0) && (armPower <= 0))
                 motorA.setPower(0.0);
             else
-                motorA.setPower(motorAPower);
-            motorB.setPower(motorBPower);
+                motorA.setPower(armPower);
 
-            // slew the servo, according to the rampUp (direction) variable.
-            if (gamepad1.b) {
+             */
+
+            // Turn the Red Carousel On / Off
+            if (gamepad2.b)
+                motorC.setPower(carouselPower);
+            if (gamepad2.x)
+                motorC.setPower(0.0);
+
+            // Turn the Blue Carousel On / Off
+            if (gamepad2.y)
+                motorC.setPower(-1*carouselPower);
+            if (gamepad2.a)
+                motorC.setPower(0.0);
+
+
+            // Slew the servo, according to the rampUp (direction) variable.
+            if (gamepad2.y) {
                 // Keep stepping up until we hit the max value.
                 position += INCREMENT ;
                 if (position >= MAX_POS ) {
@@ -166,7 +179,7 @@ public class Test_My_Lift extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.x) {
+            if (gamepad2.a) {
                 // Keep stepping down until we hit the min value.
                 position -= INCREMENT ;
                 if (position <= MIN_POS ) {
@@ -175,17 +188,16 @@ public class Test_My_Lift extends LinearOpMode {
             }
 
             // Set the servo to the new position and pause;
-            servo.setPosition(position);
-            sleep(CYCLE_MS);
-            idle();
+            // servoA.setPosition(position);
+            // sleep(CYCLE_MS);
+            // idle();
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Motors:", "MAPos:%3d MAPow:%.2f MBPos:%3d",
-                    motorA.getCurrentPosition(),
-                    motorAPower,
-                    motorB.getCurrentPosition());
-            telemetry.addData("Servo Position", "%5.2f", position);
+            telemetry.addData("Wheel Power", "Left (%.2f), Right (%.2f)", leftPower, rightPower);
+            // telemetry.addData("Arm", "Power (%.2f), Position (%.2f)", armPower, motorA.getCurrentPosition());
+            telemetry.addData("Carousel", "Power (%.2f)", carouselPower);
+            // telemetry.addData("Claw", "Position (%.2f)", servoA.getPosition());
             telemetry.update();
         }
     }

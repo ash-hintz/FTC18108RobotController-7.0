@@ -55,17 +55,171 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Test_DriveStraightGyro", group="Linear Opmode")
-@Disabled
-public class Test_DriveStraightGyro extends LinearOpMode {
+@Autonomous(name="Brian_Autonomous")
+//@Disabled
+public class Brian_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor0, motor1, motor2, motor3;
+    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC, servoA;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
-    double globalAngle;
+    double globalAngle, startAngle, endAngle, currentAngle;
 
+    private void resetAngle() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
+                AngleUnit.DEGREES);
+        globalAngle = 0;
+    }
+
+    private double getAngle() {
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                motor0.getCurrentPosition(),
+                motor1.getCurrentPosition(),
+                motor2.getCurrentPosition(),
+                motor3.getCurrentPosition());
+        telemetry.update();
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+    private double checkDirection() {
+        // The gain value determines how sensitive the correction is to direction changes.
+        // You will have to experiment with your robot to get small smooth direction changes
+        // to stay on a straight line.
+        double correction, angle, gain = .02;
+
+        angle = getAngle();
+
+        if (angle == 0)
+            correction = 0;             // no adjustment.
+        else
+            correction = -angle;        // reverse sign of angle for correction.
+
+        correction = correction * gain;
+
+        return correction;
+    }
+
+    public void turnTankGyro(double angleToTurn) {
+        double power = 0.2;
+        double correction = 0;
+
+        currentAngle = getAngle();
+        startAngle = currentAngle;
+
+        if (angleToTurn >= 0) {
+            // Start Right turn
+            motor0.setPower(power);
+            motor1.setPower(-1*power);
+            motor2.setPower(power);
+            motor3.setPower(-1*power);
+
+            while (true) {
+                currentAngle = getAngle();
+
+                // Stop turning when the turned angle = requested angle
+                if (currentAngle - startAngle >= angleToTurn) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+            }
+        } else {
+            // Start Left turn
+            motor0.setPower(-1*power);
+            motor1.setPower(power);
+            motor2.setPower(-1*power);
+            motor3.setPower(power);
+
+            while (true) {
+                currentAngle = getAngle();
+
+                // Stop turning when the turned angle = requested angle
+                if (currentAngle + startAngle <= angleToTurn) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void driveIntoWall() {
+        double power = 0.3;
+
+        // Start driving
+        motor0.setPower(power);
+        motor1.setPower(power);
+        motor2.setPower(power);
+        motor3.setPower(power);
+
+        while (true) {
+            // If bot left side has hit the wall (stopped) then shut down left side motors
+            if ((motor2.getPower() < (power * 0.75))) {
+                motor0.setPower(0.0);
+                motor2.setPower(0.0);
+            }
+            // If bot right side has hit the wall (stopped) then shut down right side motors
+            if ((motor3.getPower() < (power * 0.75))) {
+                motor1.setPower(0.0);
+                motor3.setPower(0.0);
+            }
+            // if both sides of the bot are stopped then exit the driving loop
+            if ((motor0.getPower() == 0.0) && (motor1.getPower() == 0.0))
+                break;
+        }
+    }
+
+    public void driveStraightGyro(int degreesToDrive) {
+
+        double power = 0.3;
+        double motorDistance = degreesToDrive;
+        double correction = 0;
+
+        // Start driving
+        motor0.setPower(power);
+        motor1.setPower(power);
+        motor2.setPower(power);
+        motor3.setPower(power);
+
+        while (true) {
+            // telemetry.addData("Motor0",  "Distance: %3d", motor0.getCurrentPosition());
+            // telemetry.update();
+
+            correction = checkDirection();
+            motor0.setPower(power + correction);
+            motor1.setPower(power - correction);
+            motor2.setPower(power + correction);
+            motor3.setPower(power - correction);
+
+            // Stop driving when Motor0 Encoder >= my_distance
+            if (motor0.getCurrentPosition() >= motorDistance) {
+                motor0.setPower(0.0);
+                motor1.setPower(0.0);
+                motor2.setPower(0.0);
+                motor3.setPower(0.0);
+                break;
+            }
+        }
+    }
 
     @Override
     public void runOpMode() {
@@ -73,10 +227,12 @@ public class Test_DriveStraightGyro extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        motor0  = hardwareMap.get(DcMotor.class, "motor0");
+        motor0 = hardwareMap.get(DcMotor.class, "motor0");
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
-        motor2  = hardwareMap.get(DcMotor.class, "motor2");
+        motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        // motorA = hardwareMap.get(DcMotor.class, "motorA");
+        // motorC = hardwareMap.get(DcMotor.class, "motorC");
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -93,6 +249,8 @@ public class Test_DriveStraightGyro extends LinearOpMode {
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
+        // motorA.setDirection(DcMotor.Direction.FORWARD);
+        // motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -128,35 +286,18 @@ public class Test_DriveStraightGyro extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        double power = -0.4;
-        double motorDistance = 5000;
-        double correction = 0;
 
-        // Send power to wheels
-        motor0.setPower(power);
-        motor1.setPower(power);
-        motor2.setPower(power);
-        motor3.setPower(power);
+        // START AUTONOMOUS PROGRAM
+        driveStraightGyro(1000);
+        sleep(3000);
+        // turnTankGyro(90);
+        // sleep(3000);
+        // driveIntoWall();
+        // sleep(3000);
 
-        while (true) {
-            // telemetry.addData("Motor0",  "Distance: %3d", motor0.getCurrentPosition());
-            // telemetry.update();
+        // END AUTONOMOUS PROGRAM
 
-            correction = checkDirection();
-            motor0.setPower(power + correction);
-            motor1.setPower(power - correction);
-            motor2.setPower(power + correction);
-            motor3.setPower(power - correction);
 
-            // Stop driving when Motor0 Encoder >= my_distance
-            if (motor0.getCurrentPosition() <= -1 * motorDistance) {
-                motor0.setPower(0.0);
-                motor1.setPower(0.0);
-                motor2.setPower(0.0);
-                motor3.setPower(0.0);
-                break;
-            }
-        }
         // Send telemetry message to indicate successful Encoder reset
         // telemetry.setAutoClear(false);
         telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
@@ -166,49 +307,6 @@ public class Test_DriveStraightGyro extends LinearOpMode {
                 motor3.getCurrentPosition());
         telemetry.update();
         sleep(10000);
-    }
-
-    private double getAngle() {
-
-        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-        telemetry.update();
-
-        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
-
-        if (deltaAngle < -180)
-            deltaAngle += 360;
-        else if (deltaAngle > 180)
-            deltaAngle -= 360;
-
-        globalAngle += deltaAngle;
-        lastAngles = angles;
-
-        return globalAngle;
-    }
-
-    private double checkDirection() {
-        // The gain value determines how sensitive the correction is to direction changes.
-        // You will have to experiment with your robot to get small smooth direction changes
-        // to stay on a straight line.
-        double correction, angle, gain = .02;
-
-        angle = getAngle();
-
-        if (angle == 0)
-            correction = 0;             // no adjustment.
-        else
-            correction = -angle;        // reverse sign of angle for correction.
-
-        correction = correction * gain;
-
-        return correction;
-    }
-
-    private void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
-                AngleUnit.DEGREES);
-        globalAngle = 0;
     }
 }
 
