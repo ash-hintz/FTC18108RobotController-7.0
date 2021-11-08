@@ -55,9 +55,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Simple_Autonomous", group="Linear Autonomous")
+@Autonomous(name="RedLeft")
 // @Disabled
-public class Simple_Autonomous extends LinearOpMode {
+public class RedLeft extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
@@ -65,19 +65,53 @@ public class Simple_Autonomous extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
+    private DcMotor motorA = null;
+    private DcMotor motorC = null;
     private Servo servo;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle;
 
-    public void MoveTank(double lPower, double rPower) {
+
+    public void MoveTankUnlimited(double lPower, double rPower) {
+
         double leftPower = lPower;
         double rightPower = rPower;
+        while (true) {
+            motor0.setPower(leftPower);
+            motor1.setPower(rightPower);
+            motor2.setPower(leftPower);
+            motor3.setPower(rightPower);
+        }
+    }
 
-        motor0.setPower(leftPower * 0.4);
-        motor1.setPower(rightPower * -0.4);
-        motor2.setPower(leftPower * 0.4);
-        motor3.setPower(rightPower * -0.4);
+
+    public void MoveTankDegrees(double lPower, double rPower, double degrees) {
+
+        double leftPower = lPower;
+        double rightPower = rPower;
+        double Distance = degrees;
+
+        double motorDistance = ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition())/4);
+
+        while (motorDistance < Distance) {
+            motor0.setPower(leftPower);
+            motor1.setPower(rightPower);
+            motor2.setPower(leftPower);
+            motor3.setPower(rightPower);
+
+            if (motorDistance >= Distance) {
+                motor0.setPower(0);
+                motor1.setPower(0);
+                motor2.setPower(0);
+                motor3.setPower(0);
+                break;
+            }
+        }
+    }
+
+    public void WheelShutDown() {
+        MoveTankUnlimited(0, 0);
     }
 
     public double getAngle () {
@@ -100,68 +134,49 @@ public class Simple_Autonomous extends LinearOpMode {
     }
 
     // TurnTankGyro
-    public void TurnTankGyro(int Angle, int Speed) {
+    public void TurnTankGyro(double Angle, double Speed) {
         // By: Anirudh Jagannathan
 
-        // IN THIS MYBLOCK, SPEED MUST ALWAYS BE POSITIVE!!!
+        // IN THIS METHOD, SPEED MUST ALWAYS BE POSITIVE!!!
         // Degrees can be negative or positive
-
-        double power = -0.4;
-        double motorDistance = 5000;
-        double correction = 0;
 
         double my_speed = Speed;
         double my_angle = Angle;
         double start_angle = getAngle();
         double stop_angle = (start_angle + my_angle);
-        double decel_angle = my_speed * 2.4;
-        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         if (my_angle >= 0) {
-            // Turning right
+            MoveTankDegrees(0.3, 0.3, 5);
+            // Turning left
+            MoveTankUnlimited(-1 * my_speed, my_speed);
+
             while (true) {
                 double current_gyro_angle = getAngle();
+                MoveTankDegrees(0.3, 0.3, 5);
                 if ((current_gyro_angle) >= stop_angle) {
-                    MoveTank(0, 0);
+                    MoveTankDegrees(0.3, 0.3, 5);
+                    WheelShutDown();
                     break;
                 }
-                if (current_gyro_angle >= (stop_angle - decel_angle)) {
-                    double calc = (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
-                    double new_speed = my_speed * calc;
-                    if (new_speed > 1) {
-                        MoveTank(new_speed, (-1 * new_speed));
-                    } else {
-                        MoveTank(1, -1);
-                    }
-                }
+
                 else {
-                    MoveTank(my_speed, -1 * my_speed);
+                    MoveTankUnlimited(my_speed, -1 * my_speed);
                 }
             }
         }
+
         else {
-            // Turning left
+            // Turning right
+            MoveTankUnlimited(-1 * my_speed, my_speed);
             while (true) {
                 double current_gyro_angle = getAngle();
                 if ((current_gyro_angle) <= stop_angle) {
-                    MoveTank(0, 0);
+                    MoveTankUnlimited(0, 0);
                     break;
                 }
-                if (current_gyro_angle <= (stop_angle + decel_angle)) {
-                    double calc = -1 * (((start_angle + my_angle) - (current_gyro_angle)) / decel_angle);
-                    double new_speed = my_speed * calc;
-                    if (new_speed > 1) {
-                        MoveTank((-1 * new_speed), new_speed);
-                    }
-                    else {
-                        MoveTank(-1, 1);
-                    }
-                }
+
                 else {
-                    MoveTank(-1 * my_speed, my_speed);
+                    MoveTankUnlimited(-1 * my_speed, my_speed);
                 }
             }
         }
@@ -179,13 +194,6 @@ public class Simple_Autonomous extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        motor0.setDirection(DcMotor.Direction.FORWARD);
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor2.setDirection(DcMotor.Direction.FORWARD);
-        motor3.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -242,10 +250,8 @@ public class Simple_Autonomous extends LinearOpMode {
 
         // Setup variables used during driving loop
         // Drive wheel power to set motor speed and display telemetry
-        boolean liftUp = false;
-        boolean liftDown = false;
-        boolean intakeOn = false;
-        double liftPower;
+        boolean carouselOn = false;
+        double carouselPower;
         double intakePower;
         boolean toggleDriving; // True = Car Mode, False = Tank Mode
         double leftWheelPower;
@@ -255,8 +261,7 @@ public class Simple_Autonomous extends LinearOpMode {
         double xAxis;
         double yAxis;
         // run until the end of the match (driver presses STOP)
-        MoveTank(1,1);
-        sleep(1000);
+            MoveTankDegrees(0.3, 0.3, 1);
     }
 }
 
