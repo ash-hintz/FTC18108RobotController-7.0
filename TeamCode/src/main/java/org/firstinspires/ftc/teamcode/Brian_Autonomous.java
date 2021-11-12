@@ -162,31 +162,6 @@ public class Brian_Autonomous extends LinearOpMode {
         }
     }
 
-    public void driveIntoWall() {
-        double power = 0.3;
-
-        // Start driving
-        motor0.setPower(power);
-        motor1.setPower(power);
-        motor2.setPower(power);
-        motor3.setPower(power);
-
-        while (true) {
-            // If bot left side has hit the wall (stopped) then shut down left side motors
-            if ((motor2.getPower() < (power * 0.75))) {
-                motor0.setPower(0.0);
-                motor2.setPower(0.0);
-            }
-            // If bot right side has hit the wall (stopped) then shut down right side motors
-            if ((motor3.getPower() < (power * 0.75))) {
-                motor1.setPower(0.0);
-                motor3.setPower(0.0);
-            }
-            // if both sides of the bot are stopped then exit the driving loop
-            if ((motor0.getPower() == 0.0) && (motor1.getPower() == 0.0))
-                break;
-        }
-    }
 
     public void driveStraightGyro(int degreesToDrive) {
 
