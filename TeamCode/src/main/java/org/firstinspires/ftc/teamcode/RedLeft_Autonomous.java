@@ -31,14 +31,16 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -53,9 +55,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Brian_Autonomous")
-//@Disabled
-public class Anirudh_Test extends LinearOpMode {
+@Autonomous(name="RedLeft_Autonomous")
+// @Disabled
+public class RedLeft_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -112,14 +114,31 @@ public class Anirudh_Test extends LinearOpMode {
         return correction;
     }
 
-    public void turnTankGyro(double angleToTurn) {
-        double power = 0.2;
+    public void turnTankGyro(double angleToTurn, double anglePower) {
+        double power = anglePower;
         double correction = 0;
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         currentAngle = getAngle();
         startAngle = currentAngle;
 
-        if (angleToTurn >= 0) {
+        if (angleToTurn <= 0) {
             // Start Right turn
             motor0.setPower(power);
             motor1.setPower(-1*power);
@@ -129,8 +148,15 @@ public class Anirudh_Test extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
+                if (currentAngle == 0.35 * angleToTurn) {
+                    motor0.setPower(0.4*power);
+                    motor1.setPower(-0.4*power);
+                    motor2.setPower(0.4*power);
+                    motor3.setPower(-0.4*power);
+                }
+
                 // Stop turning when the turned angle = requested angle
-                if (currentAngle - startAngle >= angleToTurn) {
+                if (currentAngle - startAngle <= angleToTurn) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -148,24 +174,33 @@ public class Anirudh_Test extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
-                // Stop turning when the turned angle = requested angle
-                if (currentAngle + startAngle <= angleToTurn) {
-                    motor0.setPower(0.0);
-                    motor1.setPower(0.0);
-                    motor2.setPower(0.0);
-                    motor3.setPower(0.0);
-                    break;
+                if (currentAngle == 0.35 * angleToTurn) {
+                    motor0.setPower(-0.4*power);
+                    motor1.setPower(0.4*power);
+                    motor2.setPower(-0.4*power);
+                    motor3.setPower(0.4*power);
+
+                    if (currentAngle + startAngle >= angleToTurn) {
+                        motor0.setPower(0.0);
+                        motor1.setPower(0.0);
+                        motor2.setPower(0.0);
+                        motor3.setPower(0.0);
+                        break;
+                    }
                 }
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
+                telemetry.update();
             }
         }
     }
 
-
-    public void driveStraightGyro(int degreesToDrive) {
-
+    public void driveIntoWall() {
         double power = 0.3;
-        double motorDistance = degreesToDrive;
-        double correction = 0;
 
         // Start driving
         motor0.setPower(power);
@@ -174,22 +209,163 @@ public class Anirudh_Test extends LinearOpMode {
         motor3.setPower(power);
 
         while (true) {
-            // telemetry.addData("Motor0",  "Distance: %3d", motor0.getCurrentPosition());
-            // telemetry.update();
-
-            correction = checkDirection();
-            motor0.setPower(power + correction);
-            motor1.setPower(power - correction);
-            motor2.setPower(power + correction);
-            motor3.setPower(power - correction);
-
-            // Stop driving when Motor0 Encoder >= my_distance
-            if (motor0.getCurrentPosition() >= motorDistance) {
+            // If bot left side has hit the wall (stopped) then shut down left side motors
+            if ((motor2.getPower() < (power * 0.75))) {
                 motor0.setPower(0.0);
-                motor1.setPower(0.0);
                 motor2.setPower(0.0);
+            }
+            // If bot right side has hit the wall (stopped) then shut down right side motors
+            if ((motor3.getPower() < (power * 0.75))) {
+                motor1.setPower(0.0);
                 motor3.setPower(0.0);
+            }
+            // if both sides of the bot are stopped then exit the driving loop
+            if ((motor0.getPower() == 0.0) && (motor1.getPower() == 0.0))
                 break;
+        }
+    }
+
+    public void driveStraightGyro(double degreesToDrive, double drivePower) {
+
+        double power = drivePower;
+        double motorDistance = degreesToDrive;
+        double correction = 0.02;
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        if (motorDistance >= 0) {
+            // Start driving forward
+            motor0.setPower(power);
+            motor1.setPower(power);
+            motor2.setPower(power);
+            motor3.setPower(power);
+
+            while (true) {
+                // telemetry.addData("Motor0",  "Distance: %3d", motor0.getCurrentPosition());
+                // telemetry.update();
+
+                correction = checkDirection();
+                motor0.setPower(power + correction);
+                motor1.setPower(power - correction);
+                motor2.setPower(power + correction);
+                motor3.setPower(power - correction);
+
+                Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.update();
+
+                // Stop driving when Motor Encoder Avg. >= motorDistance
+                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 >= motorDistance) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
+                telemetry.update();
+            }
+        }
+        if (motorDistance < 0) {
+            // Start driving backward
+            motor0.setPower(-power);
+            motor1.setPower(-power);
+            motor2.setPower(-power);
+            motor3.setPower(-power);
+
+            while (true) {
+                // telemetry.addData("Motor0",  "Distance: %3d", motor0.getCurrentPosition());
+                // telemetry.update();
+
+                correction = checkDirection();
+                motor0.setPower(-1 * (power + correction));
+                motor1.setPower(-1 * (power - correction));
+                motor2.setPower(-1 * (power + correction));
+                motor3.setPower(-1 * (power - correction));
+
+                Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.update();
+
+                // Stop driving when Motor Encoder Avg. <= motorDistance
+                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 <= motorDistance) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
+                telemetry.update();
+            }
+        }
+    }
+
+    public void carouselTurn (double carouselDegrees, double carouselPower) {
+
+        double cDegrees = carouselDegrees;
+        double cPower = carouselPower;
+
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Carousel moving left
+        if (cDegrees >= 0) {
+
+            while (true) {
+                motorC.setPower(-cPower);
+
+                if (motorC.getCurrentPosition() >= cDegrees) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+        }
+        // Carousel moving right
+        else {
+
+            while (true) {
+                motorC.setPower(cPower);
+
+                if (motorC.getCurrentPosition() <= cDegrees) {
+                    motorC.setPower(0.0);
+                    break;
+                }
             }
         }
     }
@@ -205,7 +381,7 @@ public class Anirudh_Test extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         // motorA = hardwareMap.get(DcMotor.class, "motorA");
-        // motorC = hardwareMap.get(DcMotor.class, "motorC");
+        motorC = hardwareMap.get(DcMotor.class, "motorC");
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -223,7 +399,7 @@ public class Anirudh_Test extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
         // motorA.setDirection(DcMotor.Direction.FORWARD);
-        // motorC.setDirection(DcMotor.Direction.FORWARD);
+        motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -261,8 +437,15 @@ public class Anirudh_Test extends LinearOpMode {
 
 
         // START AUTONOMOUS PROGRAM
-        driveStraightGyro(1000);
-        sleep(3000);
+        driveStraightGyro(500, 0.3);
+        sleep(1000);
+        turnTankGyro(-60, 0.25);
+        sleep(1000);
+        driveStraightGyro(-900, 0.15);
+        sleep(1000);
+        carouselTurn(-1000, 1.0);
+        sleep(1000);
+
         // turnTankGyro(90);
         // sleep(3000);
         // driveIntoWall();
