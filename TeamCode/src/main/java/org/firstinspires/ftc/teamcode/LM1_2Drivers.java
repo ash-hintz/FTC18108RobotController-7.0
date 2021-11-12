@@ -52,7 +52,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @TeleOp(name="LM0_2Drivers")
 // @Disabled
-public class LM0_2Drivers extends LinearOpMode {
+public class LM1_2Drivers extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();
