@@ -115,6 +115,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
     }
 
     public void turnTankGyro(double angleToTurn, double anglePower) {
+        double angle = angleToTurn;
         double power = anglePower;
         double correction = 0;
 
@@ -138,7 +139,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         currentAngle = getAngle();
         startAngle = currentAngle;
 
-        if (angleToTurn <= 0) {
+        if (angle <= 0) {
             // Start Right turn
             motor0.setPower(power);
             motor1.setPower(-1*power);
@@ -148,23 +149,24 @@ public class RedLeft_Autonomous extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
-                if (currentAngle == 0.35 * angleToTurn) {
+                if (currentAngle == 0.4 * angle) {
                     motor0.setPower(0.4*power);
                     motor1.setPower(-0.4*power);
                     motor2.setPower(0.4*power);
                     motor3.setPower(-0.4*power);
-                }
 
-                // Stop turning when the turned angle = requested angle
-                if (currentAngle - startAngle <= angleToTurn) {
-                    motor0.setPower(0.0);
-                    motor1.setPower(0.0);
-                    motor2.setPower(0.0);
-                    motor3.setPower(0.0);
-                    break;
+                    // Stop turning when the turned angle = requested angle
+                    if (currentAngle - startAngle <= angle) {
+                        motor0.setPower(0.0);
+                        motor1.setPower(0.0);
+                        motor2.setPower(0.0);
+                        motor3.setPower(0.0);
+                        break;
+                    }
                 }
             }
-        } else {
+        }
+        if (angle > 0) {
             // Start Left turn
             motor0.setPower(-1*power);
             motor1.setPower(power);
@@ -174,13 +176,13 @@ public class RedLeft_Autonomous extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
-                if (currentAngle == 0.35 * angleToTurn) {
+                if (currentAngle == 0.4 * angle) {
                     motor0.setPower(-0.4*power);
                     motor1.setPower(0.4*power);
                     motor2.setPower(-0.4*power);
                     motor3.setPower(0.4*power);
 
-                    if (currentAngle + startAngle >= angleToTurn) {
+                    if (currentAngle - startAngle >= angle) {
                         motor0.setPower(0.0);
                         motor1.setPower(0.0);
                         motor2.setPower(0.0);
@@ -188,13 +190,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         break;
                     }
                 }
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
-                        motor0.getCurrentPosition(),
-                        motor1.getCurrentPosition(),
-                        motor2.getCurrentPosition(),
-                        motor3.getCurrentPosition());
-                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
-                telemetry.update();
             }
         }
     }
@@ -330,7 +325,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
                         motor3.getCurrentPosition());
-                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
                 telemetry.update();
             }
         }
@@ -345,24 +339,27 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Carousel moving left
-        if (cDegrees >= 0) {
+        if (cDegrees <= 0) {
 
             while (true) {
                 motorC.setPower(-cPower);
+                telemetry.addData("Encoder:",  "MC: %3d",
+                        motorC.getCurrentPosition());
+                telemetry.update();
 
-                if (motorC.getCurrentPosition() >= cDegrees) {
+                if (motorC.getCurrentPosition() <= cDegrees) {
                     motorC.setPower(0.0);
                     break;
                 }
             }
         }
         // Carousel moving right
-        else {
+        if (cDegrees > 0) {
 
             while (true) {
                 motorC.setPower(cPower);
 
-                if (motorC.getCurrentPosition() <= cDegrees) {
+                if (motorC.getCurrentPosition() >= cDegrees) {
                     motorC.setPower(0.0);
                     break;
                 }
@@ -437,19 +434,22 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
 
         // START AUTONOMOUS PROGRAM
-        driveStraightGyro(500, 0.3);
-        sleep(1000);
-        turnTankGyro(-60, 0.25);
-        sleep(1000);
-        driveStraightGyro(-900, 0.15);
-        sleep(1000);
-        carouselTurn(-1000, 1.0);
-        sleep(1000);
+        /* driveStraightGyro(500, 0.3);
+        sleep(500);
+        turnTankGyro(-57, 0.25);
+        sleep(500);
+        driveStraightGyro(-885, 0.15);
+        sleep(500);
+        carouselTurn(-2500, 1.0);
+        sleep(500);
+        driveStraightGyro(100, 0.3);
+        sleep(500);
+        turnTankGyro(70, 0.2);
+        sleep(500);
+        driveStraightGyro(300, 0.2); */
 
-        // turnTankGyro(90);
-        // sleep(3000);
-        // driveIntoWall();
-        // sleep(3000);
+        turnTankGyro(50, 0.3);
+        turnTankGyro(-70, 0.3);
 
         // END AUTONOMOUS PROGRAM
 
