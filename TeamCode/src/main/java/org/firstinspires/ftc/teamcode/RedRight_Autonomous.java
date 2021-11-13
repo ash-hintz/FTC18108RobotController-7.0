@@ -475,7 +475,7 @@ public class RedRight_Autonomous extends LinearOpMode {
             }
         }
         sleep(100);
-        driveStraightGyro(1000, 0.25);
+        driveStraightGyro(750, 0.25);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -497,7 +497,7 @@ public class RedRight_Autonomous extends LinearOpMode {
             }
         }
         sleep(100);
-        driveStraightGyro(2400, 0.7);
+        driveStraightGyro(1900, 0.7);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -508,6 +508,7 @@ public class RedRight_Autonomous extends LinearOpMode {
             }
         }
         sleep(100);
+        turnTankGyro(180, 0.3);
 
         // END AUTONOMOUS PROGRAM
 

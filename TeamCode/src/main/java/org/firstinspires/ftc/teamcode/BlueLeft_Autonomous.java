@@ -475,7 +475,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
             }
         }
         sleep(100);
-        driveStraightGyro(1000, 0.25);
+        driveStraightGyro(750, 0.25);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());

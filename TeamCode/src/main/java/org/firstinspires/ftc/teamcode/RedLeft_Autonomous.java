@@ -497,7 +497,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(-925, 0.25);
+        driveStraightGyro(-910, 0.25);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -537,7 +537,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(600, 0.3);
+        driveStraightGyro(500, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -557,7 +557,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(1100, 0.3);
+        driveStraightGyro(-1100, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());

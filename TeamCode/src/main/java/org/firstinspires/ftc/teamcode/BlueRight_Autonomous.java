@@ -474,7 +474,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(800, 0.4);
+        driveStraightGyro(1000, 0.5);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -484,7 +484,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        turnTankGyro(33, 0.35);
+        turnTankGyro(27, 0.45);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -494,7 +494,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(-950, 0.25);
+        driveStraightGyro(-1140, 0.35);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -514,7 +514,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(500, 0.4);
+        driveStraightGyro(500, 0.5);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -524,7 +524,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        turnTankGyro(-35, 0.3);
+        turnTankGyro(-38, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -534,7 +534,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(600, 0.3);
+        driveStraightGyro(400, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -544,7 +544,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        turnTankGyro(-90, 0.3);
+        turnTankGyro(95, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -554,7 +554,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(-1100, 0.3);
+        driveStraightGyro(-900, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
