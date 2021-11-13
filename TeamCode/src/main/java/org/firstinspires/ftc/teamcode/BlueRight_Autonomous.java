@@ -31,16 +31,14 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -55,9 +53,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="RedLeft_Autonomous")
+@Autonomous(name="BlueRight_Autonomous")
 // @Disabled
-public class RedLeft_Autonomous extends LinearOpMode {
+public class BlueRight_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -462,19 +460,19 @@ public class RedLeft_Autonomous extends LinearOpMode {
         // START AUTONOMOUS PROGRAM
         driveStraightGyro(500, 0.3);
         sleep(100);
-        turnTankGyro(-60, 0.25);
+        turnTankGyro(60, 0.25);
         sleep(100);
         driveStraightGyro(-925, 0.15);
         sleep(100);
-        carouselTurn(-2500, 1.0);
+        carouselTurn(2500, 1.0);
         sleep(100);
         driveStraightGyro(500, 0.3);
         sleep(100);
-        turnTankGyro(57, 0.2);
+        turnTankGyro(-57, 0.2);
         sleep(100);
         driveStraightGyro(600, 0.2);
         sleep(100);
-        turnTankGyro(90, 0.2);
+        turnTankGyro(-90, 0.2);
         sleep(100);
         driveStraightGyro(1100, 0.2);
         sleep(100);
