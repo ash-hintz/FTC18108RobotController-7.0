@@ -401,7 +401,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        // motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
 
         // Setup IMU configurations
@@ -419,18 +419,22 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
-        // motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // make sure the IMU gyro is calibrated before continuing.
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
@@ -455,6 +459,8 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         // START AUTONOMOUS PROGRAM
@@ -468,8 +474,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(500, 0.3);
+        driveStraightGyro(800, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -479,8 +484,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        turnTankGyro(60, 0.25);
+        turnTankGyro(33, 0.35);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -490,8 +494,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(-925, 0.15);
+        driveStraightGyro(-950, 0.25);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -501,7 +504,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
         carouselTurn(2500, 1.0);
         motorA.setPower(-0.7);
         while (true) {
@@ -512,8 +514,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(500, 0.3);
+        driveStraightGyro(500, 0.4);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -523,8 +524,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        turnTankGyro(-57, 0.2);
+        turnTankGyro(-35, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -534,8 +534,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(600, 0.2);
+        driveStraightGyro(600, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -545,8 +544,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        turnTankGyro(-90, 0.2);
+        turnTankGyro(-90, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -556,8 +554,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(1100, 0.2);
+        driveStraightGyro(-1100, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
@@ -567,7 +564,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(100);
 
         // END AUTONOMOUS PROGRAM
 

@@ -167,7 +167,7 @@ public class LM1_2Drivers extends LinearOpMode {
             motor2.setPower(leftPower);
             motor3.setPower(rightPower);
 
-            // Set arm height
+            // Set arm he ight
             double armJoyStick = -gamepad2.right_stick_y;
             armPower = Range.clip(armJoyStick, -1.0, 1.0);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());

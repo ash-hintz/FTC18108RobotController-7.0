@@ -56,7 +56,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  */
 
 @Autonomous(name="Brian_Autonomous")
-//@Disabled
+@Disabled
 public class Brian_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
