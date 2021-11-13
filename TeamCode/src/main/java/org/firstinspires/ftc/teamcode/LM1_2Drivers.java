@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="LM0_2Drivers")
+@TeleOp(name="LM1_2Drivers")
 // @Disabled
 public class LM1_2Drivers extends LinearOpMode {
 
@@ -60,16 +60,22 @@ public class LM1_2Drivers extends LinearOpMode {
     private DcMotor motor1 = null;
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
-    // private DcMotor motorA = null;
+    private DcMotor motorA = null;
     private DcMotor motorC = null;
-    // private Servo servoA;
+    private Servo servoA;
+    private Servo servoB;
 
     // Define Servo class members
-    static final double INCREMENT   = 0.01;     // amount to slew servo each CYCLE_MS cycle
+    static final double INCREMENT   = 0.03;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
-    static final double MAX_POS     =  1.0;     // Maximum rotational position
-    static final double MIN_POS     =  0.0;     // Minimum rotational position
-    double  position = (MAX_POS - MIN_POS) / 2; // Start at halfway position
+
+    static final double AMAX_POS     =  0.75;     // Maximum rotational position
+    static final double AMIN_POS     =  0.25;     // Minimum rotational position
+    double  Aposition = AMIN_POS;                 // Start position
+
+    static final double BMAX_POS     =  0.50;     // Maximum rotational position
+    static final double BMIN_POS     =  0.00;     // Minimum rotational position
+    double  Bposition = BMIN_POS;                 // Start position
 
     // Variables to detect buttons pressed
     boolean gp2ButtonAPressed;
@@ -94,6 +100,7 @@ public class LM1_2Drivers extends LinearOpMode {
     @Override
     public void runOpMode() {
 
+
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -101,9 +108,10 @@ public class LM1_2Drivers extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        // motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
-        // servoA = hardwareMap.get(Servo.class, "claw");
+        servoA = hardwareMap.get(Servo.class, "servoA");
+        servoB = hardwareMap.get(Servo.class, "servoB");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -111,18 +119,33 @@ public class LM1_2Drivers extends LinearOpMode {
         motor1.setDirection(DcMotor.Direction.FORWARD);
         motor2.setDirection(DcMotor.Direction.REVERSE);
         motor3.setDirection(DcMotor.Direction.FORWARD);
-        // motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Set both servos to the starting position
+        servoA.setPosition(0.75);
+        servoB.setPosition(0.00);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -145,17 +168,16 @@ public class LM1_2Drivers extends LinearOpMode {
             motor3.setPower(rightPower);
 
             // Set arm height
-            /*
-            double armJoyStick = gamepad2.right_stick_y;
+            double armJoyStick = -gamepad2.right_stick_y;
             armPower = Range.clip(armJoyStick, -1.0, 1.0);
-            if ((motorA.getCurrentPosition() >= 1000) && (armPower >= 0))
+            telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
+
+            if ((motorA.getCurrentPosition() <= -300) && (armPower >= 0))
                 motorA.setPower(0.0);
-            else if ((motorA.getCurrentPosition() <= 0) && (armPower <= 0))
+            else if ((motorA.getCurrentPosition() >= 10) && (armPower <= 0))
                 motorA.setPower(0.0);
             else
-                motorA.setPower(armPower);
-
-             */
+                motorA.setPower(-1*armPower);
 
             // Turn the Red Carousel On / Off
             if (gamepad2.b)
@@ -169,35 +191,44 @@ public class LM1_2Drivers extends LinearOpMode {
             if (gamepad2.a)
                 motorC.setPower(0.0);
 
-
             // Slew the servo, according to the rampUp (direction) variable.
-            if (gamepad2.y) {
+            if (gamepad2.left_bumper) {
                 // Keep stepping up until we hit the max value.
-                position += INCREMENT ;
-                if (position >= MAX_POS ) {
-                    position = MAX_POS;
+                Aposition += INCREMENT;
+                if (Aposition >= AMAX_POS ) {
+                    Aposition = AMAX_POS;
+                }
+                Bposition -= INCREMENT;
+                if (Bposition <= BMIN_POS ) {
+                    Bposition = BMIN_POS;
                 }
             }
 
-            if (gamepad2.a) {
+            if (gamepad2.right_bumper) {
                 // Keep stepping down until we hit the min value.
-                position -= INCREMENT ;
-                if (position <= MIN_POS ) {
-                    position = MIN_POS;
+                Aposition -= INCREMENT ;
+                if (Aposition <= AMIN_POS ) {
+                    Aposition = AMIN_POS;
+                }
+                Bposition += INCREMENT ;
+                if (Bposition >= BMAX_POS ) {
+                    Bposition = BMAX_POS;
                 }
             }
 
             // Set the servo to the new position and pause;
-            // servoA.setPosition(position);
-            // sleep(CYCLE_MS);
-            // idle();
+            servoA.setPosition(Aposition);
+            servoB.setPosition(Bposition);
+            sleep(CYCLE_MS);
+            idle();
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Wheel Power", "Left (%.2f), Right (%.2f)", leftPower, rightPower);
-            // telemetry.addData("Arm", "Power (%.2f), Position (%.2f)", armPower, motorA.getCurrentPosition());
+            telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
             telemetry.addData("Carousel", "Power (%.2f)", carouselPower);
-            // telemetry.addData("Claw", "Position (%.2f)", servoA.getPosition());
+            telemetry.addData("Position Values", "A: (%.2f), B: (%.2f)", Aposition, Bposition);
+            telemetry.addData("Servos", "A: (%.2f), B: (%.2f)", servoA.getPosition(), servoB.getPosition());
             telemetry.update();
         }
     }
