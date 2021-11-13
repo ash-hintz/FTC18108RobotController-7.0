@@ -65,6 +65,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
+    double armPower;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -403,7 +404,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1 = hardwareMap.get(DcMotor.class, "motor1");
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        // motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
 
         // Setup IMU configurations
@@ -421,13 +422,15 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1.setDirection(DcMotor.Direction.REVERSE);
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
-        // motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -457,26 +460,120 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         // START AUTONOMOUS PROGRAM
+
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
+        sleep(100);
         driveStraightGyro(500, 0.3);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(-60, 0.25);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(-925, 0.15);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         carouselTurn(-2500, 1.0);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(500, 0.3);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(57, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(600, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(90, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(1100, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
 
         // END AUTONOMOUS PROGRAM

@@ -458,11 +458,50 @@ public class BlueLeft_Autonomous extends LinearOpMode {
 
 
         // START AUTONOMOUS PROGRAM
+
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
+        sleep(100);
         driveStraightGyro(1000, 0.25);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(90, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(2000, 0.4);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
+        sleep(100);
 
         // END AUTONOMOUS PROGRAM
 

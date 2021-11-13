@@ -458,23 +458,115 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
 
         // START AUTONOMOUS PROGRAM
+
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
+        sleep(100);
         driveStraightGyro(500, 0.3);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(60, 0.25);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(-925, 0.15);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         carouselTurn(2500, 1.0);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(500, 0.3);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(-57, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(600, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         turnTankGyro(-90, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
         driveStraightGyro(1100, 0.2);
+        motorA.setPower(-0.7);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= -300) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
         sleep(100);
 
         // END AUTONOMOUS PROGRAM
