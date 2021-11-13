@@ -117,7 +117,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
     public void turnTankGyro(double angleToTurn, double anglePower) {
         double angle = angleToTurn;
         double power = anglePower;
-        double correction = 0;
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = false;
@@ -125,6 +124,15 @@ public class RedLeft_Autonomous extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
         telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                motor0.getCurrentPosition(),
+                motor1.getCurrentPosition(),
+                motor2.getCurrentPosition(),
+                motor3.getCurrentPosition());
         telemetry.update();
 
         motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -149,24 +157,31 @@ public class RedLeft_Autonomous extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
-                if (currentAngle == 0.4 * angle) {
+                if (currentAngle <= 0.4 * angle) {
                     motor0.setPower(0.4*power);
                     motor1.setPower(-0.4*power);
                     motor2.setPower(0.4*power);
                     motor3.setPower(-0.4*power);
-
-                    // Stop turning when the turned angle = requested angle
-                    if (currentAngle - startAngle <= angle) {
-                        motor0.setPower(0.0);
-                        motor1.setPower(0.0);
-                        motor2.setPower(0.0);
-                        motor3.setPower(0.0);
-                        break;
-                    }
                 }
+
+                // Stop turning when the turned angle = requested angle
+                if (currentAngle <= angle) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.update();
             }
         }
-        if (angle > 0) {
+        else {
             // Start Left turn
             motor0.setPower(-1*power);
             motor1.setPower(power);
@@ -176,20 +191,28 @@ public class RedLeft_Autonomous extends LinearOpMode {
             while (true) {
                 currentAngle = getAngle();
 
-                if (currentAngle == 0.4 * angle) {
+                if (currentAngle >= 0.4 * angle) {
                     motor0.setPower(-0.4*power);
                     motor1.setPower(0.4*power);
                     motor2.setPower(-0.4*power);
                     motor3.setPower(0.4*power);
-
-                    if (currentAngle - startAngle >= angle) {
-                        motor0.setPower(0.0);
-                        motor1.setPower(0.0);
-                        motor2.setPower(0.0);
-                        motor3.setPower(0.0);
-                        break;
-                    }
                 }
+
+                // Stop turning when the turned angle = requested angle
+                if (currentAngle >= angle) {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    break;
+                }
+                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
+                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                        motor0.getCurrentPosition(),
+                        motor1.getCurrentPosition(),
+                        motor2.getCurrentPosition(),
+                        motor3.getCurrentPosition());
+                telemetry.update();
             }
         }
     }
@@ -220,11 +243,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
     }
 
-    public void driveStraightGyro(double degreesToDrive, double drivePower) {
+    public void driveStraightGyro(int degreesToDrive, double drivePower) {
 
         double power = drivePower;
-        double motorDistance = degreesToDrive;
+        int motorDistance = degreesToDrive;
         double correction = 0.02;
+        Orientation angle;
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = false;
@@ -255,10 +279,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 // telemetry.update();
 
                 correction = checkDirection();
-                motor0.setPower(power + correction);
-                motor1.setPower(power - correction);
-                motor2.setPower(power + correction);
-                motor3.setPower(power - correction);
+                motor0.setPower(power - correction);
+                motor1.setPower(power + correction);
+                motor2.setPower(power - correction);
+                motor3.setPower(power + correction);
 
                 Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
@@ -325,6 +349,8 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
                         motor3.getCurrentPosition());
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
                 telemetry.update();
             }
         }
@@ -434,22 +460,24 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
 
         // START AUTONOMOUS PROGRAM
-        /* driveStraightGyro(500, 0.3);
-        sleep(500);
-        turnTankGyro(-57, 0.25);
-        sleep(500);
-        driveStraightGyro(-885, 0.15);
-        sleep(500);
+        driveStraightGyro(500, 0.3);
+        sleep(100);
+        turnTankGyro(-60, 0.25);
+        sleep(100);
+        driveStraightGyro(-925, 0.15);
+        sleep(100);
         carouselTurn(-2500, 1.0);
-        sleep(500);
-        driveStraightGyro(100, 0.3);
-        sleep(500);
-        turnTankGyro(70, 0.2);
-        sleep(500);
-        driveStraightGyro(300, 0.2); */
-
-        turnTankGyro(50, 0.3);
-        turnTankGyro(-70, 0.3);
+        sleep(100);
+        driveStraightGyro(500, 0.3);
+        sleep(100);
+        turnTankGyro(57, 0.2);
+        sleep(100);
+        driveStraightGyro(600, 0.2);
+        sleep(100);
+        turnTankGyro(90, 0.2);
+        sleep(100);
+        driveStraightGyro(1100, 0.2);
+        sleep(100);
 
         // END AUTONOMOUS PROGRAM
 
