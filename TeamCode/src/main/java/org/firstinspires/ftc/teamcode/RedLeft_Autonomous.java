@@ -537,7 +537,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        driveStraightGyro(500, 0.3);
+        driveStraightGyro(350, 0.3);
         motorA.setPower(-0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());

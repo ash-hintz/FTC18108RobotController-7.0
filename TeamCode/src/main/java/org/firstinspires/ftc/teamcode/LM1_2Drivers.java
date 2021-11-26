@@ -145,7 +145,6 @@ public class LM1_2Drivers extends LinearOpMode {
 
         // Set both servos to the starting position
         servoA.setPosition(0.75);
-        servoB.setPosition(0.00);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -167,15 +166,15 @@ public class LM1_2Drivers extends LinearOpMode {
             motor2.setPower(leftPower);
             motor3.setPower(rightPower);
 
-            // Set arm he ight
+            // Set arm the right
             double armJoyStick = -gamepad2.right_stick_y;
-            armPower = Range.clip(armJoyStick, -1.0, 1.0);
+            armPower = Range.clip(armJoyStick, -0.6, 0.6);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
-            if ((motorA.getCurrentPosition() <= -300) && (armPower >= 0))
+            if ((motorA.getCurrentPosition() <= -10) && (armPower >= 0))
                 motorA.setPower(0.0);
-            else if ((motorA.getCurrentPosition() >= 10) && (armPower <= 0))
-                motorA.setPower(0.0);
+            else if ((motorA.getCurrentPosition() >= 290) && (armPower <= 0))
+                motorA.setPower(0.6);
             else
                 motorA.setPower(-1*armPower);
 
@@ -198,10 +197,10 @@ public class LM1_2Drivers extends LinearOpMode {
                 if (Aposition >= AMAX_POS ) {
                     Aposition = AMAX_POS;
                 }
-                Bposition -= INCREMENT;
+                /* Bposition -= INCREMENT;
                 if (Bposition <= BMIN_POS ) {
                     Bposition = BMIN_POS;
-                }
+                } */
             }
 
             if (gamepad2.right_bumper) {
@@ -210,15 +209,15 @@ public class LM1_2Drivers extends LinearOpMode {
                 if (Aposition <= AMIN_POS ) {
                     Aposition = AMIN_POS;
                 }
-                Bposition += INCREMENT ;
+                /* Bposition += INCREMENT ;
                 if (Bposition >= BMAX_POS ) {
                     Bposition = BMAX_POS;
-                }
+                } */
             }
 
             // Set the servo to the new position and pause;
             servoA.setPosition(Aposition);
-            servoB.setPosition(Bposition);
+            // servoB.setPosition(Bposition);
             sleep(CYCLE_MS);
             idle();
 
