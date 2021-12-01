@@ -155,7 +155,7 @@ public class LM2_2Drivers extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = gamepad1.left_stick_y;
             double turn = -gamepad1.right_stick_x;
-            leftPower = Range.clip(drive + turn, 0.7, 0.7);
+            leftPower = Range.clip(drive + turn, -0.7, 0.7);
             rightPower = Range.clip(drive - turn, -0.7, 0.7);
 
             // Send calculated power to wheels
@@ -172,7 +172,7 @@ public class LM2_2Drivers extends LinearOpMode {
             if ((motorA.getCurrentPosition() <= -10) && (armPower >= 0)) {
                 motorA.setPower(0.0);
             }
-            else if ((motorA.getCurrentPosition() >= 1300) && (armPower <= 0)) {
+            else if ((motorA.getCurrentPosition() >= 1000) && (armPower <= 0)) {
                 motorA.setPower(0.0);
             }
             else {
