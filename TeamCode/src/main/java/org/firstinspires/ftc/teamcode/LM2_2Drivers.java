@@ -50,7 +50,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="LM1_2Drivers")
+@TeleOp(name="LM2_2Drivers")
 // @Disabled
 public class LM2_2Drivers extends LinearOpMode {
 
@@ -63,14 +63,13 @@ public class LM2_2Drivers extends LinearOpMode {
     private DcMotor motorA = null;
     private DcMotor motorC = null;
     private Servo servoA;
-    // private Servo servoB;
 
     // Define Servo class members
     static final double INCREMENT   = 0.03;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
 
-    static final double AMAX_POS     =  1.00;     // Maximum rotational position
-    static final double AMIN_POS     =  0.00;     // Minimum rotational position
+    static final double AMAX_POS     =  0.80;     // Maximum rotational position
+    static final double AMIN_POS     =  0.10;     // Minimum rotational position
     double  Aposition = AMIN_POS;                 // Start position
 
     static final double BMAX_POS     =  0.50;     // Maximum rotational position
@@ -111,7 +110,6 @@ public class LM2_2Drivers extends LinearOpMode {
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         servoA = hardwareMap.get(Servo.class, "servoA");
-        // servoB = hardwareMap.get(Servo.class, "servoB");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -144,7 +142,7 @@ public class LM2_2Drivers extends LinearOpMode {
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set both servos to the starting position
-        servoA.setPosition(0.3);
+        servoA.setPosition(0.15);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -157,8 +155,8 @@ public class LM2_2Drivers extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             double drive = gamepad1.left_stick_y;
             double turn = -gamepad1.right_stick_x;
-            leftPower = 0.5 * Range.clip(drive + turn, -1.0, 1.0);
-            rightPower = 0.5 * Range.clip(drive - turn, -1.0, 1.0);
+            leftPower = Range.clip(drive + turn, 0.7, 0.7);
+            rightPower = Range.clip(drive - turn, -0.7, 0.7);
 
             // Send calculated power to wheels
             motor0.setPower(leftPower);
@@ -168,15 +166,14 @@ public class LM2_2Drivers extends LinearOpMode {
 
             // Set arm the right
             double armJoyStick = -gamepad2.right_stick_y;
-            armPower = Range.clip(armJoyStick, -0.3, 0.3);
+            armPower = Range.clip(armJoyStick, -0.5, 0.5);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
             if ((motorA.getCurrentPosition() <= -10) && (armPower >= 0)) {
                 motorA.setPower(0.0);
             }
-            else if ((motorA.getCurrentPosition() >= 350) && (armPower <= 0)) {
-                motor0.setPower(0.0);
-                motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            else if ((motorA.getCurrentPosition() >= 1300) && (armPower <= 0)) {
+                motorA.setPower(0.0);
             }
             else {
                 motorA.setPower(-1 * armPower);
@@ -201,10 +198,6 @@ public class LM2_2Drivers extends LinearOpMode {
                 if (Aposition >= AMAX_POS ) {
                     Aposition = AMAX_POS;
                 }
-                /* Bposition -= INCREMENT;
-                if (Bposition <= BMIN_POS ) {
-                    Bposition = BMIN_POS;
-                } */
             }
 
             if (gamepad2.right_bumper) {
@@ -213,15 +206,10 @@ public class LM2_2Drivers extends LinearOpMode {
                 if (Aposition <= AMIN_POS ) {
                     Aposition = AMIN_POS;
                 }
-                /* Bposition += INCREMENT ;
-                if (Bposition >= BMAX_POS ) {
-                    Bposition = BMAX_POS;
-                } */
             }
 
             // Set the servo to the new position and pause;
             servoA.setPosition(Aposition);
-            // servoB.setPosition(Bposition);
             sleep(CYCLE_MS);
             idle();
 
@@ -231,7 +219,6 @@ public class LM2_2Drivers extends LinearOpMode {
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
             telemetry.addData("Carousel", "Power (%.2f)", carouselPower);
             telemetry.addData("Position Values", "A: (%.2f), B: (%.2f)", Aposition, Bposition);
-            // telemetry.addData("Servos", "A: (%.2f), B: (%.2f)", servoA.getPosition(), servoB.getPosition());
             telemetry.update();
         }
     }
