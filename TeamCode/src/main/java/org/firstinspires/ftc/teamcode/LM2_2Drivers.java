@@ -87,6 +87,8 @@ public class LM2_2Drivers extends LinearOpMode {
     double leftPower;
     double rightPower;
     double armPower;
+    double armHeightMin = -10;
+    double armHeightMax = 1000;
     double carouselPower = -1.0;
 
     // Local variable to control Arm / Carousel / Class
@@ -169,10 +171,10 @@ public class LM2_2Drivers extends LinearOpMode {
             armPower = Range.clip(armJoyStick, -0.5, 0.5);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
-            if ((motorA.getCurrentPosition() <= -10) && (armPower >= 0)) {
+            if ((motorA.getCurrentPosition() <= armHeightMin) && (armPower >= 0)) {
                 motorA.setPower(0.0);
             }
-            else if ((motorA.getCurrentPosition() >= 1000) && (armPower <= 0)) {
+            else if ((motorA.getCurrentPosition() >= armHeightMax) && (armPower <= 0)) {
                 motorA.setPower(0.0);
             }
             else {
@@ -190,6 +192,14 @@ public class LM2_2Drivers extends LinearOpMode {
                 motorC.setPower(-1*carouselPower);
             if (gamepad2.a)
                 motorC.setPower(0.0);
+
+            // Set new max height for arm
+            if (gamepad2.dpad_up) {
+                armHeightMax = 1300;
+            }
+            if (gamepad2.dpad_down) {
+                armHeightMax = 1000;
+            }
 
             // Slew the servo, according to the rampUp (direction) variable.
             if (gamepad2.left_bumper) {
