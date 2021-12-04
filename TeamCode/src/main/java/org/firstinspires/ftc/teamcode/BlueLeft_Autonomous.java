@@ -482,7 +482,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() >= 1000) {
+            if (motorA.getCurrentPosition() >= 1050) {
                 motorA.setPower(0.0);
                 break;
             }
@@ -490,31 +490,31 @@ public class BlueLeft_Autonomous extends LinearOpMode {
 
         driveStraightGyro(250,0.5);
         sleep(250);
-        turnTankGyro(-55, 0.5);
+        turnTankGyro(-80, 0.5);
         imu.initialize(parameters);
-        driveStraightGyro(750, 0.5);
-        turnTankGyro(55, 0.5);
+        driveStraightGyro(850, 0.5);
+        turnTankGyro(80, 0.5);
 
         motorA.setPower(0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() >= 1000) {
+            if (motorA.getCurrentPosition() >= 1100) {
                 motorA.setPower(0.0);
                 break;
             }
         }
 
         imu.initialize(parameters);
-        driveStraightGyro(200, 0.3);
+        driveStraightGyro(250, 0.3);
         sleep(250);
         servoA.setPosition(0.30);
         sleep(500);
-        driveStraightGyro(-300, 0.5);
+        driveStraightGyro(-175, 0.5);
         sleep(250);
-        turnTankGyro(90, 0.5);
+        turnTankGyro(80, 0.5);
         imu.initialize(parameters);
-        driveStraightGyro(2000, 0.7);
+        driveStraightGyro(2650, 0.7);
 
         servoA.setPosition(0.10);
         motorA.setPower(-0.4);

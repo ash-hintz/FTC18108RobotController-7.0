@@ -478,7 +478,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             }
         }
 
-        driveStraightGyro(300,0.3);
+        driveStraightGyro(260,0.3);
         sleep(250);
         servoA.setPosition(0.30);
         sleep(250);
@@ -488,19 +488,19 @@ public class BlueRight_Autonomous extends LinearOpMode {
         imu.initialize(parameters);
         driveStraightGyro(-1650, 0.7);
         sleep(250);
-        turnTankGyro(-70, 0.15);
+        turnTankGyro(-55, 0.15);
         imu.initialize(parameters);
-        driveStraightGyro(-150, 0.15);
+        driveStraightGyro(-600, 0.15);
         sleep(500);
-        motorC.setPower(-1.00);
-        while(true){
-            if (motorC.getCurrentPosition() <= -2325) {
+        motorC.setPower(1.00);
+        while(true) {
+            if (motorC.getCurrentPosition() >= 2325) {
                 motorC.setPower(0.00);
                 break;
             }
         }
         sleep(500);
-        turnTankGyro(-20,0.6);
+        turnTankGyro(-35,0.6);
         imu.initialize(parameters);
         driveStraightGyro(800,0.5);
         sleep(250);

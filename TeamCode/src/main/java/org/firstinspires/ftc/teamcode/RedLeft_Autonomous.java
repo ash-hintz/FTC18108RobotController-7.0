@@ -478,7 +478,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             }
         }
 
-        driveStraightGyro(200,0.3);
+        driveStraightGyro(225,0.3);
         sleep(250);
         servoA.setPosition(0.30);
         sleep(250);
