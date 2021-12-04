@@ -33,12 +33,14 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -59,10 +61,12 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC, servoA;
+    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC;
+    private Servo servoA;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
+    double armPower;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -115,14 +119,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
     public void turnTankGyro(double angleToTurn, double anglePower) {
         double angle = angleToTurn;
         double power = anglePower;
-
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
-        telemetry.update();
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
@@ -248,14 +244,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
         double correction = 0.02;
         Orientation angle;
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
-        telemetry.update();
-
         motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -299,13 +287,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
                     motor3.setPower(0.0);
                     break;
                 }
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
-                        motor0.getCurrentPosition(),
-                        motor1.getCurrentPosition(),
-                        motor2.getCurrentPosition(),
-                        motor3.getCurrentPosition());
-                telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
-                telemetry.update();
             }
         }
         if (motorDistance < 0) {
@@ -342,14 +323,6 @@ public class BlueRight_Autonomous extends LinearOpMode {
                     motor3.setPower(0.0);
                     break;
                 }
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
-                        motor0.getCurrentPosition(),
-                        motor1.getCurrentPosition(),
-                        motor2.getCurrentPosition(),
-                        motor3.getCurrentPosition());
-                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.update();
             }
         }
     }
@@ -403,6 +376,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
+        servoA = hardwareMap.get(Servo.class, "servoA");
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -465,105 +439,80 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
-        motorA.setPower(-0.7);
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        servoA.setPosition(0.10);
+        sleep(1250);
+        motorA.setPower(0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() >= 1000) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        driveStraightGyro(1000, 0.5);
-        motorA.setPower(-0.7);
+
+        driveStraightGyro(250,0.5);
+        sleep(250);
+        turnTankGyro(65,0.5);
+        sleep(250);
+        imu.initialize(parameters);
+        driveStraightGyro(875,0.5);
+        sleep(250);
+        turnTankGyro(-65,0.5);
+        imu.initialize(parameters);
+
+        motorA.setPower(0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() >= 1100) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        turnTankGyro(27, 0.45);
-        motorA.setPower(-0.7);
+
+        driveStraightGyro(200,0.3);
+        sleep(250);
+        servoA.setPosition(0.30);
+        sleep(250);
+        driveStraightGyro(-400, 0.35);
+        sleep(250);
+        turnTankGyro(78, 0.6);
+        imu.initialize(parameters);
+        driveStraightGyro(-2050, 0.7);
+        imu.initialize(parameters);
+        driveStraightGyro(-150, 0.15);
+        sleep(500);
+        motorC.setPower(-1.00);
+        while(true){
+            if (motorC.getCurrentPosition() <= -2325) {
+                motorC.setPower(0.00);
+                break;
+            }
+        }
+        sleep(500);
+        turnTankGyro(-75,0.6);
+        imu.initialize(parameters);
+        driveStraightGyro(800,0.5);
+        sleep(250);
+        servoA.setPosition(0.10);
+        motorA.setPower(-0.4);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() <= 0.0) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        driveStraightGyro(-1140, 0.35);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        carouselTurn(2500, 1.0);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        driveStraightGyro(500, 0.5);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        turnTankGyro(-38, 0.4);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        driveStraightGyro(400, 0.4);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        turnTankGyro(95, 0.4);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        driveStraightGyro(-900, 0.4);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
+
 
         // END AUTONOMOUS PROGRAM
 

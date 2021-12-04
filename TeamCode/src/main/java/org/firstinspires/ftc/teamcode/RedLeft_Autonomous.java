@@ -466,7 +466,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         driveStraightGyro(875,0.5);
         sleep(250);
         turnTankGyro(65,0.5);
-        sleep(250);
+        imu.initialize(parameters);
 
         motorA.setPower(0.7);
         while (true) {
@@ -477,18 +477,41 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 break;
             }
         }
-        sleep(250);
 
-        imu.initialize(parameters);
         driveStraightGyro(200,0.3);
         sleep(250);
         servoA.setPosition(0.30);
         sleep(250);
         driveStraightGyro(-400, 0.35);
         sleep(250);
-        turnTankGyro(-85, 0.6);
+        turnTankGyro(-78, 0.6);
         imu.initialize(parameters);
-        driveStraightGyro(-1850, 0.7);
+        driveStraightGyro(-2050, 0.7);
+        imu.initialize(parameters);
+        driveStraightGyro(-150, 0.15);
+        sleep(500);
+        motorC.setPower(-1.00);
+        while(true){
+            if (motorC.getCurrentPosition() <= -2325) {
+                motorC.setPower(0.00);
+                break;
+            }
+        }
+        sleep(500);
+        turnTankGyro(75,0.6);
+        imu.initialize(parameters);
+        driveStraightGyro(800,0.5);
+        sleep(250);
+        servoA.setPosition(0.10);
+        motorA.setPower(-0.4);
+        while (true) {
+            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+            telemetry.update();
+            if (motorA.getCurrentPosition() <= 0.0) {
+                motorA.setPower(0.0);
+                break;
+            }
+        }
 
 
         // END AUTONOMOUS PROGRAM

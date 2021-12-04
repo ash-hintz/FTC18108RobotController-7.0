@@ -33,6 +33,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -59,7 +60,8 @@ public class RedRight_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC, servoA;
+    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC;
+    private Servo servoA;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
@@ -403,6 +405,7 @@ public class RedRight_Autonomous extends LinearOpMode {
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
+        servoA = hardwareMap.get(Servo.class, "servoA");
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -421,6 +424,7 @@ public class RedRight_Autonomous extends LinearOpMode {
         motor3.setDirection(DcMotor.Direction.REVERSE);
         motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
+
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -465,50 +469,63 @@ public class RedRight_Autonomous extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
-        motorA.setPower(-0.7);
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        servoA.setPosition(0.10);
+        sleep(1250);
+        motorA.setPower(0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() >= 1000) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(750, 0.25);
-        motorA.setPower(-0.7);
+
+        driveStraightGyro(250,0.5);
+        sleep(250);
+        turnTankGyro(55, 0.5);
+        imu.initialize(parameters);
+        driveStraightGyro(750, 0.5);
+        turnTankGyro(-55, 0.5);
+
+        motorA.setPower(0.7);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() >= 1000) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        sleep(100);
-        turnTankGyro(-90, 0.2);
-        motorA.setPower(-0.7);
+
+        imu.initialize(parameters);
+        driveStraightGyro(200, 0.3);
+        sleep(250);
+        servoA.setPosition(0.30);
+        sleep(500);
+        driveStraightGyro(-300, 0.5);
+        sleep(250);
+        turnTankGyro(-90, 0.5);
+        imu.initialize(parameters);
+        driveStraightGyro(2000, 0.7);
+
+        servoA.setPosition(0.10);
+        motorA.setPower(-0.4);
         while (true) {
             telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
             telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
+            if (motorA.getCurrentPosition() <= 0.0) {
                 motorA.setPower(0.0);
                 break;
             }
         }
-        sleep(100);
-        driveStraightGyro(1900, 0.7);
-        motorA.setPower(-0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= -300) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-        sleep(100);
-        turnTankGyro(180, 0.3);
 
         // END AUTONOMOUS PROGRAM
 
