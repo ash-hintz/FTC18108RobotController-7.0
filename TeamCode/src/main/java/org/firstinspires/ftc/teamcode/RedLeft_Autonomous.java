@@ -36,11 +36,18 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import java.util.List;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -78,7 +85,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -122,7 +129,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -144,18 +151,18 @@ public class RedLeft_Autonomous extends LinearOpMode {
         if (angle <= 0) {
             // Start Right turn
             motor0.setPower(power);
-            motor1.setPower(-1*power);
+            motor1.setPower(-1 * power);
             motor2.setPower(power);
-            motor3.setPower(-1*power);
+            motor3.setPower(-1 * power);
 
             while (true) {
                 currentAngle = getAngle();
 
                 if (currentAngle <= 0.4 * angle) {
-                    motor0.setPower(0.4*power);
-                    motor1.setPower(-0.4*power);
-                    motor2.setPower(0.4*power);
-                    motor3.setPower(-0.4*power);
+                    motor0.setPower(0.4 * power);
+                    motor1.setPower(-0.4 * power);
+                    motor2.setPower(0.4 * power);
+                    motor3.setPower(-0.4 * power);
                 }
 
                 // Stop turning when the turned angle = requested angle
@@ -167,29 +174,28 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     break;
                 }
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
                         motor3.getCurrentPosition());
                 telemetry.update();
             }
-        }
-        else {
+        } else {
             // Start Left turn
-            motor0.setPower(-1*power);
+            motor0.setPower(-1 * power);
             motor1.setPower(power);
-            motor2.setPower(-1*power);
+            motor2.setPower(-1 * power);
             motor3.setPower(power);
 
             while (true) {
                 currentAngle = getAngle();
 
                 if (currentAngle >= 0.4 * angle) {
-                    motor0.setPower(-0.4*power);
-                    motor1.setPower(0.4*power);
-                    motor2.setPower(-0.4*power);
-                    motor3.setPower(0.4*power);
+                    motor0.setPower(-0.4 * power);
+                    motor1.setPower(0.4 * power);
+                    motor2.setPower(-0.4 * power);
+                    motor3.setPower(0.4 * power);
                 }
 
                 // Stop turning when the turned angle = requested angle
@@ -201,7 +207,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     break;
                 }
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -272,7 +278,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
                 Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -280,7 +286,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 telemetry.update();
 
                 // Stop driving when Motor Encoder Avg. >= motorDistance
-                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 >= motorDistance) {
+                if ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition()) / 4 >= motorDistance) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -308,7 +314,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
                 Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -316,7 +322,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 telemetry.update();
 
                 // Stop driving when Motor Encoder Avg. <= motorDistance
-                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 <= motorDistance) {
+                if ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition()) / 4 <= motorDistance) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -327,7 +333,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
     }
 
-    public void carouselTurn (double carouselDegrees, double carouselPower) {
+    public void carouselTurn(double carouselDegrees, double carouselPower) {
 
         double cDegrees = carouselDegrees;
         double cPower = carouselPower;
@@ -340,7 +346,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
             while (true) {
                 motorC.setPower(-cPower);
-                telemetry.addData("Encoder:",  "MC: %3d",
+                telemetry.addData("Encoder:", "MC: %3d",
                         motorC.getCurrentPosition());
                 telemetry.update();
 
@@ -366,6 +372,66 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
+        initTfod();
+
+        /**
+         * Activate TensorFlow Object Detection before we wait for the start command.
+         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         **/
+        if (tfod != null) {
+            tfod.activate();
+
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 16/9).
+            tfod.setZoom(2.5, 16.0 / 9.0);
+        }
+
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start op mode");
+        telemetry.update();
+        waitForStart();
+
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                                    recognition.getLeft());
+                            telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                                    recognition.getRight());
+
+                            if (recognition.getLeft() <= 210) {
+                                motorA.setPower(0.7);
+                                while (true) {
+                                    telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
+                                    telemetry.update();
+                                    if (motorA.getCurrentPosition() >= 1100) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        telemetry.update();
+                    }
+                }
+            }
+        }
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -417,7 +483,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -439,7 +505,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
-        parameters.loggingEnabled = false;
+
+
+        /* parameters.loggingEnabled = false;
         parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
@@ -458,14 +526,14 @@ public class RedLeft_Autonomous extends LinearOpMode {
             }
         }
 
-        driveStraightGyro(250,0.5);
+        driveStraightGyro(250, 0.5);
         sleep(250);
-        turnTankGyro(-65,0.5);
+        turnTankGyro(-65, 0.5);
         sleep(250);
         imu.initialize(parameters);
-        driveStraightGyro(875,0.5);
+        driveStraightGyro(875, 0.5);
         sleep(250);
-        turnTankGyro(65,0.5);
+        turnTankGyro(65, 0.5);
         imu.initialize(parameters);
 
         motorA.setPower(0.7);
@@ -478,7 +546,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             }
         }
 
-        driveStraightGyro(225,0.3);
+        driveStraightGyro(225, 0.3);
         sleep(250);
         servoA.setPosition(0.30);
         sleep(250);
@@ -491,16 +559,16 @@ public class RedLeft_Autonomous extends LinearOpMode {
         driveStraightGyro(-150, 0.15);
         sleep(500);
         motorC.setPower(-1.00);
-        while(true){
+        while (true) {
             if (motorC.getCurrentPosition() <= -2325) {
                 motorC.setPower(0.00);
                 break;
             }
         }
         sleep(500);
-        turnTankGyro(75,0.6);
+        turnTankGyro(75, 0.6);
         imu.initialize(parameters);
-        driveStraightGyro(800,0.5);
+        driveStraightGyro(800, 0.5);
         sleep(250);
         servoA.setPosition(0.10);
         motorA.setPower(-0.4);
@@ -511,7 +579,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 motorA.setPower(0.0);
                 break;
             }
-        }
+        } */
 
 
         // END AUTONOMOUS PROGRAM
@@ -519,7 +587,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         // Send telemetry message to indicate successful Encoder reset
         // telemetry.setAutoClear(false);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -527,5 +595,82 @@ public class RedLeft_Autonomous extends LinearOpMode {
         telemetry.update();
         sleep(10000);
     }
-}
 
+    /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
+     * the following 4 detectable objects
+     *  0: Ball,
+     *  1: Cube,
+     *  2: Duck,
+     *  3: Marker (duck location tape marker)
+     *
+     *  Two additional model assets are available which only contain a subset of the objects:
+     *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
+     *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
+     */
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
+    };
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.z
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
+    private static final String VUFORIA_KEY =
+            "ARGTPc3/////AAABmQPsjNjUvkhEpOekRVJS6hFuyqQd8MDqXOad0+ftSCpchv3jSVN+LPwH9lupDnWlh91rhm3M2+DFMZ9QktxCXz/8BYKSHVvfqlqPnHwLLO+xHrcd9MxtmUSG6HvzphpqmAq+2plmXSIDCRJ1f8qgMDFXy3S3LVFzGGm95EwOp/wr1FtolYp+MqrYwqn90b2O5ZzGvYzi14WdmqKIlo3QqE9SRc3wZe/8TKTGXdYmM7rkWwpPqmlhSCEdQU09jSco6FQGX+WxPbv88CTeYbhn6UrDBWehTx7Ns+Hjoers9yrs0MWkWEaEeUCSuP+6R0UbuXOjrgr0vEmpcDZh2z2ARVKlqXvOKzAr66TFHBWA6uH2";
+
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+}
