@@ -34,7 +34,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -46,6 +48,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
 
@@ -68,12 +75,19 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC;
-    private Servo servoA;
+    private DcMotor motor0 = null;
+    private DcMotor motor1 = null;
+    private DcMotor motor2 = null;
+    private DcMotor motor3 = null;
+    private DcMotor motorA = null;
+    private DcMotor motorC = null;
+    private Servo servoA = null;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
+
+
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -371,11 +385,68 @@ public class RedLeft_Autonomous extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during the robot configuration
+        // step (using the FTC Robot Controller app on the phone).
+        motor0 = hardwareMap.get(DcMotor.class, "motor0");
+        motor1 = hardwareMap.get(DcMotor.class, "motor1");
+        motor2 = hardwareMap.get(DcMotor.class, "motor2");
+        motor3 = hardwareMap.get(DcMotor.class, "motor3");
+        motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorC = hardwareMap.get(DcMotor.class, "motorC");
+        servoA = hardwareMap.get(Servo.class, "servoA");
+
+        // Setup DC Motor configurations
+        // Most robots need the motor on one side to be reversed to drive forward
+        motor0.setDirection(DcMotor.Direction.FORWARD);
+        motor1.setDirection(DcMotor.Direction.REVERSE);
+        motor2.setDirection(DcMotor.Direction.FORWARD);
+        motor3.setDirection(DcMotor.Direction.REVERSE);
+        motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorC.setDirection(DcMotor.Direction.FORWARD);
+
+        motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        int startPos = 0;
+        int endPos = 0;
+
+
+        int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewID);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                RobotLog.vv("OpenCV error code", String.valueOf(errorCode));
+            }
+        });
+
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
         initVuforia();
         initTfod();
+
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -397,6 +468,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
         telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
+        runtime.reset();
+
+        int shippingLevel = 0;
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -406,6 +480,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        telemetry.update();
                         // step through the list of recognitions and display boundary info.
                         int i = 0;
                         for (Recognition recognition : updatedRecognitions) {
@@ -415,34 +490,65 @@ public class RedLeft_Autonomous extends LinearOpMode {
                             telemetry.addData(String.format("  Right (%d)", i), "%.03f",
                                     recognition.getRight());
 
-                            if (recognition.getLeft() <= 210) {
-                                motorA.setPower(0.7);
+                            if (recognition.getLabel() != ("Duck")) {
+                                resetAngle();
+                                motor0.setPower(0.15);
+                                motor2.setPower(0.15);
                                 while (true) {
-                                    telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-                                    telemetry.update();
-                                    if (motorA.getCurrentPosition() >= 1100) {
-                                        motorA.setPower(0.0);
-                                        break;
+                                    if (recognition.getLabel() == ("Duck")) {
+                                        motor0.setPower(0.0);
+                                        motor2.setPower(0.0);
+                                        if (getAngle() == 0) {
+                                            motorA.setPower(0.4);
+                                            while (true) {
+                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                                telemetry.update();
+                                                if (motorA.getCurrentPosition() >= 200) {
+                                                    motorA.setPower(0.0);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (getAngle() > 25 && getAngle() < 55) {
+                                            shippingLevel = 1;
+                                            motorA.setPower(0.4);
+                                            while (true) {
+                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                                telemetry.update();
+                                                if (motorA.getCurrentPosition() >= 550) {
+                                                    motorA.setPower(0.0);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (getAngle() > 55) {
+                                            shippingLevel = 2;
+                                            motorA.setPower(0.4);
+                                            while (true) {
+                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                                telemetry.update();
+                                                if (motorA.getCurrentPosition() >= 1000) {
+                                                    motorA.setPower(0.0);
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-                        telemetry.update();
                     }
+                }
+                if (motorA.getCurrentPosition() >= 1100) {
+                    motorA.setPower(0.0);
+                    break;
                 }
             }
         }
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-        motor0 = hardwareMap.get(DcMotor.class, "motor0");
-        motor1 = hardwareMap.get(DcMotor.class, "motor1");
-        motor2 = hardwareMap.get(DcMotor.class, "motor2");
-        motor3 = hardwareMap.get(DcMotor.class, "motor3");
-        motorA = hardwareMap.get(DcMotor.class, "motorA");
-        motorC = hardwareMap.get(DcMotor.class, "motorC");
-        servoA = hardwareMap.get(Servo.class, "servoA");
+        /*
 
         // Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -453,28 +559,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         telemetry.addData("Mode", "IMU calibrating...");
         telemetry.update();
 
-        // Setup DC Motor configurations
-        // Most robots need the motor on one side to be reversed to drive forward
-        motor0.setDirection(DcMotor.Direction.FORWARD);
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor2.setDirection(DcMotor.Direction.FORWARD);
-        motor3.setDirection(DcMotor.Direction.REVERSE);
-        motorA.setDirection(DcMotor.Direction.FORWARD);
-        motorC.setDirection(DcMotor.Direction.FORWARD);
 
-        motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // make sure the IMU gyro is calibrated before continuing.
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
@@ -491,17 +576,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
         telemetry.update();
 
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
-
-        motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        */
 
         // START AUTONOMOUS PROGRAM
 
@@ -615,6 +690,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             "Marker"
     };
 
+
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
      * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
@@ -652,7 +728,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
