@@ -474,66 +474,68 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        telemetry.update();
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  Left (%d)", i), "%.03f",
-                                    recognition.getLeft());
-                            telemetry.addData(String.format("  Right (%d)", i), "%.03f",
-                                    recognition.getRight());
+                motor0.setPower(0.15);
+                motor1.setPower(-0.15);
+                motor2.setPower(0.15);
+                motor3.setPower(-0.15);
 
-                            if (recognition.getLabel() != ("Duck")) {
-                                resetAngle();
-                                motor0.setPower(0.15);
-                                motor2.setPower(0.15);
-                                while (true) {
-                                    if (recognition.getLabel() == ("Duck")) {
-                                        motor0.setPower(0.0);
-                                        motor2.setPower(0.0);
-                                        if (getAngle() == 0) {
-                                            motorA.setPower(0.4);
-                                            while (true) {
-                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
-                                                telemetry.update();
-                                                if (motorA.getCurrentPosition() >= 200) {
-                                                    motorA.setPower(0.0);
-                                                    break;
-                                                }
-                                            }
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                telemetry.update();
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                            recognition.getLeft());
+                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                            recognition.getRight());
+
+                    if (recognition.getLabel() != ("Duck")) {
+                        resetAngle();
+                        while (true) {
+                            if (recognition.getLabel() == ("Duck")) {
+                                motor0.setPower(0.0);
+                                motor1.setPower(0.0);
+                                motor2.setPower(0.0);
+                                motor3.setPower(0.0);
+
+                                if (getAngle() == 0) {
+                                    motorA.setPower(0.4);
+                                    while (true) {
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.update();
+                                        if (motorA.getCurrentPosition() >= 200) {
+                                            motorA.setPower(0.0);
+                                            break;
                                         }
+                                    }
+                                }
 
-                                        if (getAngle() > 25 && getAngle() < 55) {
-                                            shippingLevel = 1;
-                                            motorA.setPower(0.4);
-                                            while (true) {
-                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
-                                                telemetry.update();
-                                                if (motorA.getCurrentPosition() >= 550) {
-                                                    motorA.setPower(0.0);
-                                                    break;
-                                                }
-                                            }
+                                if (getAngle() > 25 && getAngle() < 55) {
+                                    shippingLevel = 1;
+                                    motorA.setPower(0.4);
+                                    while (true) {
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.update();
+                                        if (motorA.getCurrentPosition() >= 550) {
+                                            motorA.setPower(0.0);
+                                            break;
                                         }
+                                    }
+                                }
 
-                                        if (getAngle() > 55) {
-                                            shippingLevel = 2;
-                                            motorA.setPower(0.4);
-                                            while (true) {
-                                                telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
-                                                telemetry.update();
-                                                if (motorA.getCurrentPosition() >= 1000) {
-                                                    motorA.setPower(0.0);
-                                                    break;
-                                                }
-                                            }
+                                if (getAngle() > 55) {
+                                    shippingLevel = 2;
+                                    motorA.setPower(0.4);
+                                    while (true) {
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.update();
+                                        if (motorA.getCurrentPosition() >= 1000) {
+                                            motorA.setPower(0.0);
+                                            break;
                                         }
                                     }
                                 }
@@ -541,9 +543,26 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         }
                     }
                 }
-                if (motorA.getCurrentPosition() >= 1100) {
-                    motorA.setPower(0.0);
-                    break;
+                if (shippingLevel == 0) {
+                    while (true)
+                        if (motorA.getCurrentPosition() >= 200) {
+                            motorA.setPower(0.0);
+                            break;
+                        }
+                }
+                if (shippingLevel == 1) {
+                    while (true)
+                        if (motorA.getCurrentPosition() >= 550) {
+                            motorA.setPower(0.0);
+                            break;
+                        }
+                }
+                if (shippingLevel == 2) {
+                    while (true)
+                        if (motorA.getCurrentPosition() >= 1000) {
+                            motorA.setPower(0.0);
+                            break;
+                        }
                 }
             }
         }
