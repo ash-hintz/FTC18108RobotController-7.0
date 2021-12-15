@@ -387,6 +387,15 @@ public class RedLeft_Autonomous extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        //  Setup IMU configurations
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
@@ -413,6 +422,19 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // make sure the IMU gyro is calibrated before continuing.
+        while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -474,35 +496,37 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (opModeIsActive()) {
             while (opModeIsActive()) {
-                motor0.setPower(0.15);
-                motor1.setPower(-0.15);
-                motor2.setPower(0.15);
-                motor3.setPower(-0.15);
-
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                telemetry.update();
-                // step through the list of recognitions and display boundary info.
-                int i = 0;
-                for (Recognition recognition : updatedRecognitions) {
-                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
-                            recognition.getLeft());
-                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
-                            recognition.getRight());
+                if (updatedRecognitions == null) {
+                    motor0.setPower(0.15);
+                    motor1.setPower(-0.15);
+                    motor2.setPower(0.15);
+                    motor3.setPower(-0.15);
+                } else {
+                    motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
 
-                    if (recognition.getLabel() != ("Duck")) {
-                        resetAngle();
-                        while (true) {
-                            if (recognition.getLabel() == ("Duck")) {
-                                motor0.setPower(0.0);
-                                motor1.setPower(0.0);
-                                motor2.setPower(0.0);
-                                motor3.setPower(0.0);
+                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    telemetry.update();
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
 
-                                if (getAngle() == 0) {
+                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                                recognition.getLeft());
+                        telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                                recognition.getRight());
+
+                        i++;
+
+                        if (recognition.getLabel() == ("Duck")) {
+                            while (true) {
+                                if (getAngle() <= 0) {
                                     motorA.setPower(0.4);
                                     while (true) {
                                         telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
@@ -514,7 +538,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                                     }
                                 }
 
-                                if (getAngle() > 25 && getAngle() < 55) {
+                                if (getAngle() < -25 && getAngle() > -55) {
                                     shippingLevel = 1;
                                     motorA.setPower(0.4);
                                     while (true) {
@@ -543,6 +567,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         }
                     }
                 }
+
                 if (shippingLevel == 0) {
                     while (true)
                         if (motorA.getCurrentPosition() >= 200) {
@@ -568,23 +593,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         /*
-
-        // Setup IMU configurations
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
-        telemetry.update();
-
-
-
-        // make sure the IMU gyro is calibrated before continuing.
-        while (!isStopRequested() && !imu.isGyroCalibrated()) {
-            sleep(50);
-            idle();
-        }
 
         // Send telemetry message to indicate successful Encoder reset
         telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
