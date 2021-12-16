@@ -454,7 +454,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             @Override
             public void onOpened()
             {
-                webcam.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -499,14 +499,14 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
-                if (updatedRecognitions != null) {
-                    motor0.setPower(0.075);
-                    motor1.setPower(-0.075);
-                    motor2.setPower(0.075);
-                    motor3.setPower(-0.075);
+                if (updatedRecognitions == null) {
+                    motor0.setPower(0.15);
+                    motor1.setPower(-0.15);
+                    motor2.setPower(0.15);
+                    motor3.setPower(-0.15);
                 }
 
-                if (updatedRecognitions == null) {
+                if (updatedRecognitions != null) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -529,65 +529,31 @@ public class RedLeft_Autonomous extends LinearOpMode {
                         if (recognition.getLabel() == ("Duck")) {
                             while (true) {
                                 if (getAngle() <= 0) {
-                                    motorA.setPower(0.4);
-                                    while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
-                                        telemetry.update();
-                                        if (motorA.getCurrentPosition() >= 200) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
-                                    }
+                                    motorA.setTargetPosition(200);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                 }
 
                                 if (getAngle() < -25 && getAngle() > -55) {
                                     shippingLevel = 1;
-                                    motorA.setPower(0.4);
-                                    while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
-                                        telemetry.update();
-                                        if (motorA.getCurrentPosition() >= 550) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
-                                    }
+                                    motorA.setTargetPosition(550);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                 }
 
                                 if (getAngle() > 55) {
                                     shippingLevel = 2;
-                                    motorA.setPower(0.4);
-                                    while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
-                                        telemetry.update();
-                                        if (motorA.getCurrentPosition() >= 1000) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
-                                    }
+                                    motorA.setTargetPosition(1000);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                                 }
 
-                                if (shippingLevel == 0) {
-                                    while (true)
-                                        if (motorA.getCurrentPosition() >= 200) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
-                                }
-                                if (shippingLevel == 1) {
-                                    while (true)
-                                        if (motorA.getCurrentPosition() >= 550) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
-                                }
-                                if (shippingLevel == 2) {
-                                    while (true)
-                                        if (motorA.getCurrentPosition() >= 1000) {
-                                            motorA.setPower(0.0);
-                                            break;
-                                        }
+                                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                    motorA.setPower(0.0);
+                                    break;
                                 }
                             }
+                        }
+                        if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                            motorA.setPower(0.0);
+                            break;
                         }
                     }
                 }
