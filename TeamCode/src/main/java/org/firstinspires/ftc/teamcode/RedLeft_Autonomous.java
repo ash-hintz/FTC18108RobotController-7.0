@@ -476,7 +476,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
          **/
         if (tfod != null) {
             tfod.activate();
-
             // The TensorFlow software will scale the input images from the camera to a lower resolution.
             // This can result in lower detection accuracy at longer distances (> 55cm or 22").
             // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
@@ -499,12 +498,15 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+
+                if (updatedRecognitions != null) {
+                    motor0.setPower(0.075);
+                    motor1.setPower(-0.075);
+                    motor2.setPower(0.075);
+                    motor3.setPower(-0.075);
+                }
+
                 if (updatedRecognitions == null) {
-                    motor0.setPower(0.15);
-                    motor1.setPower(-0.15);
-                    motor2.setPower(0.15);
-                    motor3.setPower(-0.15);
-                } else {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -529,7 +531,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                                 if (getAngle() <= 0) {
                                     motorA.setPower(0.4);
                                     while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
                                         telemetry.update();
                                         if (motorA.getCurrentPosition() >= 200) {
                                             motorA.setPower(0.0);
@@ -542,7 +544,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                                     shippingLevel = 1;
                                     motorA.setPower(0.4);
                                     while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
                                         telemetry.update();
                                         if (motorA.getCurrentPosition() >= 550) {
                                             motorA.setPower(0.0);
@@ -555,7 +557,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                                     shippingLevel = 2;
                                     motorA.setPower(0.4);
                                     while (true) {
-                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(),motorA.getPower());
+                                        telemetry.addData("MotorA:", "Pos: %3d, Power: %.2f", motorA.getCurrentPosition(), motorA.getPower());
                                         telemetry.update();
                                         if (motorA.getCurrentPosition() >= 1000) {
                                             motorA.setPower(0.0);
@@ -563,31 +565,31 @@ public class RedLeft_Autonomous extends LinearOpMode {
                                         }
                                     }
                                 }
+
+                                if (shippingLevel == 0) {
+                                    while (true)
+                                        if (motorA.getCurrentPosition() >= 200) {
+                                            motorA.setPower(0.0);
+                                            break;
+                                        }
+                                }
+                                if (shippingLevel == 1) {
+                                    while (true)
+                                        if (motorA.getCurrentPosition() >= 550) {
+                                            motorA.setPower(0.0);
+                                            break;
+                                        }
+                                }
+                                if (shippingLevel == 2) {
+                                    while (true)
+                                        if (motorA.getCurrentPosition() >= 1000) {
+                                            motorA.setPower(0.0);
+                                            break;
+                                        }
+                                }
                             }
                         }
                     }
-                }
-
-                if (shippingLevel == 0) {
-                    while (true)
-                        if (motorA.getCurrentPosition() >= 200) {
-                            motorA.setPower(0.0);
-                            break;
-                        }
-                }
-                if (shippingLevel == 1) {
-                    while (true)
-                        if (motorA.getCurrentPosition() >= 550) {
-                            motorA.setPower(0.0);
-                            break;
-                        }
-                }
-                if (shippingLevel == 2) {
-                    while (true)
-                        if (motorA.getCurrentPosition() >= 1000) {
-                            motorA.setPower(0.0);
-                            break;
-                        }
                 }
             }
         }
