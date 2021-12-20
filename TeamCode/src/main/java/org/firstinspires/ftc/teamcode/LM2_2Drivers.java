@@ -63,7 +63,6 @@ public class LM2_2Drivers extends LinearOpMode {
     private DcMotor motorA = null;
     private DcMotor motorC = null;
     private Servo servoA;
-
     // Define Servo class members
     static final double INCREMENT   = 0.03;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
@@ -213,7 +212,7 @@ public class LM2_2Drivers extends LinearOpMode {
             if (gamepad2.right_bumper) {
                 // Keep stepping down until we hit the min value.
                 Aposition -= INCREMENT ;
-                if (Aposition <= AMIN_POS ) {
+                if (Aposition <= AMIN_POS) {
                     Aposition = AMIN_POS;
                 }
             }

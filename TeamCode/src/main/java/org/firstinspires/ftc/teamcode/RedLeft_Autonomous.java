@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.robot.Robot;
@@ -80,8 +81,8 @@ public class RedLeft_Autonomous extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private DcMotor motorA = null;
-    private DcMotor motorC = null;
-    private Servo servoA = null;
+    private CRServo servoA = null;
+    private CRServo servoB = null;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
@@ -351,43 +352,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
     }
 
-    public void carouselTurn(double carouselDegrees, double carouselPower) {
-
-        double cDegrees = carouselDegrees;
-        double cPower = carouselPower;
-
-        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Carousel moving left
-        if (cDegrees <= 0) {
-
-            while (true) {
-                motorC.setPower(-cPower);
-                telemetry.addData("Encoder:", "MC: %3d",
-                        motorC.getCurrentPosition());
-                telemetry.update();
-
-                if (motorC.getCurrentPosition() <= cDegrees) {
-                    motorC.setPower(0.0);
-                    break;
-                }
-            }
-        }
-        // Carousel moving right
-        if (cDegrees > 0) {
-
-            while (true) {
-                motorC.setPower(cPower);
-
-                if (motorC.getCurrentPosition() >= cDegrees) {
-                    motorC.setPower(0.0);
-                    break;
-                }
-            }
-        }
-    }
-
     public void detectDuckPos() {
         while (true) {
             // getUpdatedRecognitions() will return null if no new information is available since
@@ -395,10 +359,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             if (updatedRecognitions == null) {
-                motor0.setPower(0.03);
-                motor1.setPower(-0.03);
-                motor2.setPower(0.03);
-                motor3.setPower(-0.03);
+                motor0.setPower(0.04);
+                motor1.setPower(-0.04);
+                motor2.setPower(0.04);
+                motor3.setPower(-0.04);
             }
 
             if (updatedRecognitions != null) {
@@ -423,12 +387,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     i++;
 
                     if (recognition.getLabel() != "Duck") {
-                            /*
-                            motor0.setPower(0.1);
-                            motor1.setPower(-0.1);
-                            motor2.setPower(0.1);
-                            motor3.setPower(-0.1);
-                             */
+                        /*
+                        motor0.setPower(0.1);
+                        motor1.setPower(-0.1);
+                        motor2.setPower(0.1);
+                        motor3.setPower(-0.1);
+                        */
                     }
 
                     else if (recognition.getLabel() == ("Duck")) {
@@ -484,11 +448,21 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     }
 
                     if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
                         break;
                     }
                 }
             }
+
+            if  (shippingLevel == 0 && motorA.getCurrentPosition() >= firstLevel) {
+                break;
+            }
+            if  (shippingLevel == 1 && motorA.getCurrentPosition() >= secondLevel) {
+                break;
+            }
+            if  (shippingLevel == 2 && motorA.getCurrentPosition() >= thirdLevel) {
+                break;
+            }
+
         }
     }
 
@@ -509,7 +483,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         int endPos = 0;
 
 
-        int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        /* int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewID);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -524,7 +498,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             {
                 RobotLog.vv("OpenCV error code", String.valueOf(errorCode));
             }
-        });
+        }); */
 
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -556,8 +530,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
-        motorC = hardwareMap.get(DcMotor.class, "motorC");
-        servoA = hardwareMap.get(Servo.class, "servoA");
+        // servoA = hardwareMap.get(Servo.class, "servoA");
+        servoA = hardwareMap.get(CRServo.class, "servoA");
+        servoB = hardwareMap.get(CRServo.class, "servoB");
+
 
         // Setup DC Motor configurations
         // Most robots need the motor on one side to be reversed to drive forward
@@ -566,14 +542,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
         motorA.setDirection(DcMotor.Direction.FORWARD);
-        motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // make sure the IMU gyro is calibrated before continuing.
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
@@ -586,14 +560,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         /** Wait for the game to begin */
@@ -604,9 +576,37 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
+        motorA.setPower(0.1);
+        sleep(1000);
+
+        /* servoA.setPower(0.5);
+        sleep(5000);
+        servoA.setPower(0.0);
+        sleep(5000);
+        servoA.setPower(-0.5);
+        sleep(5000);
+        servoA.setPower(-1.0);
+        sleep(5000); */
+
+
+        /*
+        sleep(1250);
         driveStraightGyro(200, 0.3);
         sleep(1000);
         detectDuckPos();
+
+        if (shippingLevel == 0) {
+
+        }
+
+        if (shippingLevel == 1) {
+
+        }
+
+        if (shippingLevel == 2) {
+            turnTankGyro(-10, 0.4);
+            driveStraightGyro(600, 0.6);
+        } */
 
         // END AUTONOMOUS PROGRAM
 
