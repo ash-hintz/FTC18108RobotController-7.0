@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -88,14 +89,14 @@ public class LM2_2Drivers extends LinearOpMode {
     double armPower;
     double armHeightMin = -10;
     double armHeightMax = 1000;
-    double carouselPower = -1.0;
+    double carouselPower = 0.015;
 
     // Local variable to control Arm / Carousel / Class
     boolean armIsMoving = false;
     int armFloor = 0;
-    int armShippingHubL1 = 200;
-    int armShippingHubL2 = 600;
-    int armShippingHubL3 = 1000;
+    int armShippingHubL1 = 350;
+    int armShippingHubL2 = 700;
+    int armShippingHubL3 = 1150;
 
     @Override
     public void runOpMode() {
@@ -143,7 +144,7 @@ public class LM2_2Drivers extends LinearOpMode {
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set both servos to the starting position
-        servoA.setPosition(0.15);
+        // servoA.setPosition(0.15);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -181,6 +182,7 @@ public class LM2_2Drivers extends LinearOpMode {
             }
 
             // Turn the Red Carousel On / Off
+
             if (gamepad2.b)
                 motorC.setPower(carouselPower);
             if (gamepad2.x)
@@ -201,7 +203,9 @@ public class LM2_2Drivers extends LinearOpMode {
             }
 
             // Slew the servo, according to the rampUp (direction) variable.
+
             if (gamepad2.left_bumper) {
+
                 // Keep stepping up until we hit the max value.
                 Aposition += INCREMENT;
                 if (Aposition >= AMAX_POS ) {
@@ -216,6 +220,7 @@ public class LM2_2Drivers extends LinearOpMode {
                     Aposition = AMIN_POS;
                 }
             }
+
 
             // Set the servo to the new position and pause;
             servoA.setPosition(Aposition);

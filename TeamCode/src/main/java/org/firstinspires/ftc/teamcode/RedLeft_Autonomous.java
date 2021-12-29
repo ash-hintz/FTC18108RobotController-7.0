@@ -81,7 +81,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private DcMotor motorA = null;
-    private CRServo servoA = null;
+    private Servo servoA = null;
     private CRServo servoB = null;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
@@ -531,7 +531,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         // servoA = hardwareMap.get(Servo.class, "servoA");
-        servoA = hardwareMap.get(CRServo.class, "servoA");
+        servoA = hardwareMap.get(Servo.class, "servoA");
         servoB = hardwareMap.get(CRServo.class, "servoB");
 
 
