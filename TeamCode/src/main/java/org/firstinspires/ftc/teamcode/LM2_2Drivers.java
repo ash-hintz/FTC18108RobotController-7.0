@@ -89,7 +89,7 @@ public class LM2_2Drivers extends LinearOpMode {
     double armPower;
     double armHeightMin = -10;
     double armHeightMax = 1000;
-    double carouselPower = 0.015;
+    double carouselPower = 0.08;
 
     // Local variable to control Arm / Carousel / Class
     boolean armIsMoving = false;

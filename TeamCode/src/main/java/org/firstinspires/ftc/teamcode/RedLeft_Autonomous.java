@@ -363,13 +363,27 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 motor1.setPower(-0.04);
                 motor2.setPower(0.04);
                 motor3.setPower(-0.04);
+
+                if (getAngle() <= -10) {
+                    motor0.setPower(0.02);
+                    motor1.setPower(-0.02);
+                    motor2.setPower(0.02);
+                    motor3.setPower(-0.02);
+                }
+                else if (getAngle() <= -30) {
+                    motor0.setPower(0.01);
+                    motor1.setPower(-0.01);
+                    motor2.setPower(0.01);
+                    motor3.setPower(-0.01);
+                }
             }
 
             if (updatedRecognitions != null) {
                     /* motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
-                    motor3.setPower(0.0); */
+                    motor3.setPower(0.0);
+                    */
                 motorA.setTargetPosition(0);
 
                 telemetry.addData("# Object Detected", updatedRecognitions.size());
@@ -576,24 +590,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
-        motorA.setPower(0.1);
-        sleep(1000);
-
-        /* servoA.setPower(0.5);
-        sleep(5000);
-        servoA.setPower(0.0);
-        sleep(5000);
-        servoA.setPower(-0.5);
-        sleep(5000);
-        servoA.setPower(-1.0);
-        sleep(5000); */
-
-
-        /*
+        servoA.setPosition(0.10);
         sleep(1250);
-        driveStraightGyro(200, 0.3);
+        driveStraightGyro(150, 0.3);
         sleep(1000);
         detectDuckPos();
+
 
         if (shippingLevel == 0) {
 
@@ -604,9 +606,13 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(-10, 0.4);
-            driveStraightGyro(600, 0.6);
-        } */
+            resetAngle();
+            driveStraightGyro(1200, 0.6);
+            sleep(500);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-400, 0.5);
+        }
 
         // END AUTONOMOUS PROGRAM
 
