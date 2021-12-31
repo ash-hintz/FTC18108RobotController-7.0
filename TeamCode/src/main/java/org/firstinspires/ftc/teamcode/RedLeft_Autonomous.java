@@ -81,6 +81,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private DcMotor motorA = null;
+    private DcMotor motorC = null;
     private Servo servoA = null;
     private CRServo servoB = null;
     private BNO055IMU imu;
@@ -163,6 +164,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        resetAngle();
 
         currentAngle = getAngle();
         startAngle = currentAngle;
@@ -277,6 +279,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        resetAngle();
 
         if (motorDistance >= 0) {
             // Start driving forward
@@ -544,6 +547,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorC = hardwareMap.get(DcMotor.class, "motorC");
         // servoA = hardwareMap.get(Servo.class, "servoA");
         servoA = hardwareMap.get(Servo.class, "servoA");
         servoB = hardwareMap.get(CRServo.class, "servoB");
@@ -556,12 +560,14 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
         motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // make sure the IMU gyro is calibrated before continuing.
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
@@ -574,12 +580,14 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         /** Wait for the game to begin */
@@ -602,16 +610,74 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 1) {
-
-        }
-
-        if (shippingLevel == 2) {
-            resetAngle();
-            driveStraightGyro(1200, 0.6);
+            turnTankGyro(-12, 0.1);
+            driveStraightGyro(800, 0.6);
             sleep(500);
+            while (true) {
+                motorA.setTargetPosition(secondLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(200, 0.2);
+            sleep(400);
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-400, 0.5);
+            turnTankGyro(-36, 0.5);
+            driveStraightGyro(-1100, 0.7);
+            sleep(400);
+            driveStraightGyro(-300, 0.15);
+            sleep(400);
+            motorC.setPower(0.10);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(100, 0.3);
+            sleep(400);
+            turnTankGyro(72, 0.5);
+            sleep(400);
+            driveStraightGyro(700, 0.6);
+            sleep(400);
+            motorA.setTargetPosition(0);
+            motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+
+        if (shippingLevel == 2) {
+            turnTankGyro(1.5, 0.1);
+            driveStraightGyro(1150, 0.6);
+            sleep(500);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-500, 0.5);
+            turnTankGyro(-38, 0.5);
+            driveStraightGyro(-1300, 0.7);
+            sleep(400);
+            driveStraightGyro(-280, 0.15);
+            sleep(400);
+            motorC.setPower(0.10);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(100, 0.3);
+            sleep(400);
+            turnTankGyro(70, 0.5);
+            sleep(400);
+            driveStraightGyro(500, 0.6);
+            sleep(400);
+            motorA.setTargetPosition(0);
+            motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
 
         // END AUTONOMOUS PROGRAM
