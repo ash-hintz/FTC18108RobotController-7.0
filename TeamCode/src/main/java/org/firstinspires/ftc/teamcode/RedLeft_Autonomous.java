@@ -606,7 +606,51 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
 
         if (shippingLevel == 0) {
-
+            turnTankGyro(-42, 0.1);
+            driveStraightGyro(800, 0.6);
+            sleep(500);
+            while (true) {
+                motorA.setTargetPosition(secondLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(200, 0.2);
+            sleep(400);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-400, 0.5);
+            turnTankGyro(-36, 0.5);
+            driveStraightGyro(-1200, 0.7);
+            sleep(400);
+            driveStraightGyro(-400, 0.15);
+            sleep(400);
+            motorC.setPower(0.09);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(150, 0.3);
+            sleep(400);
+            turnTankGyro(70, 0.5);
+            sleep(400);
+            driveStraightGyro(600, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(0);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
         }
 
         if (shippingLevel == 1) {
@@ -628,11 +672,11 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-400, 0.5);
             turnTankGyro(-36, 0.5);
-            driveStraightGyro(-1100, 0.7);
+            driveStraightGyro(-1200, 0.7);
             sleep(400);
-            driveStraightGyro(-300, 0.15);
+            driveStraightGyro(-400, 0.15);
             sleep(400);
-            motorC.setPower(0.10);
+            motorC.setPower(0.09);
             while (true) {
                 if (motorC.getCurrentPosition() >= 450) {
                     motorC.setPower(0.0);
@@ -640,14 +684,21 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 }
             }
             sleep(400);
-            driveStraightGyro(100, 0.3);
+            driveStraightGyro(150, 0.3);
             sleep(400);
-            turnTankGyro(72, 0.5);
+            turnTankGyro(70, 0.5);
             sleep(400);
-            driveStraightGyro(700, 0.6);
+            driveStraightGyro(600, 0.6);
             sleep(400);
-            motorA.setTargetPosition(0);
-            motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            while (true) {
+                motorA.setTargetPosition(0);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
         }
 
         if (shippingLevel == 2) {
@@ -670,7 +721,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 }
             }
             sleep(400);
-            driveStraightGyro(100, 0.3);
+            driveStraightGyro(150, 0.3);
             sleep(400);
             turnTankGyro(70, 0.5);
             sleep(400);
