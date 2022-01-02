@@ -64,6 +64,7 @@ public class LM2_2Drivers extends LinearOpMode {
     private DcMotor motorA = null;
     private DcMotor motorC = null;
     private Servo servoA;
+    private CRServo servoC;
     // Define Servo class members
     static final double INCREMENT   = 0.03;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
@@ -112,6 +113,7 @@ public class LM2_2Drivers extends LinearOpMode {
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         servoA = hardwareMap.get(Servo.class, "servoA");
+        servoC = hardwareMap.get(CRServo.class, "servoC");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
