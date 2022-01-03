@@ -91,8 +91,8 @@ public class RedLeft_Autonomous extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 350;
-    int secondLevel = 850;
+    int firstLevel = 400;
+    int secondLevel = 750;
     int thirdLevel = 1150;
 
 
@@ -610,16 +610,25 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
 
         if (shippingLevel == 0) {
-            turnTankGyro(-42, 0.1);
-            driveStraightGyro(400, 0.6);
+            turnTankGyro(-37, 0.1);
+            driveStraightGyro(450, 0.6);
             sleep(500);
+            while (true) {
+                motorA.setTargetPosition(firstLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
             driveStraightGyro(200, 0.2);
             sleep(400);
             servoA.setPosition(0.25);
             sleep(400);
-            driveStraightGyro(-800, 0.5);
-            turnTankGyro(-37, 0.5);
-            driveStraightGyro(-400, 0.7);
+            driveStraightGyro(-500, 0.5);
+            turnTankGyro(-36, 0.5);
+            driveStraightGyro(-950, 0.7);
             sleep(400);
             driveStraightGyro(-200, 0.15);
             sleep(400);
@@ -633,9 +642,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(150, 0.3);
             sleep(400);
-            turnTankGyro(70, 0.5);
+            turnTankGyro(68, 0.5);
             sleep(400);
-            driveStraightGyro(600, 0.6);
+            driveStraightGyro(550, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
@@ -656,7 +665,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 motorA.setTargetPosition(secondLevel);
                 motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
                     motorA.setPower(0.0);
                     break;
                 }
@@ -667,9 +676,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-400, 0.5);
             turnTankGyro(-36, 0.5);
-            driveStraightGyro(-800, 0.7);
+            driveStraightGyro(-950, 0.7);
             sleep(400);
-            driveStraightGyro(-400, 0.15);
+            driveStraightGyro(-200, 0.15);
             sleep(400);
             motorC.setPower(0.09);
             while (true) {
@@ -681,7 +690,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(150, 0.3);
             sleep(400);
-            turnTankGyro(73, 0.5);
+            turnTankGyro(70, 0.5);
             sleep(400);
             driveStraightGyro(450, 0.6);
             sleep(400);
@@ -698,7 +707,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 2) {
             turnTankGyro(5, 0.1);
-            driveStraightGyro(435, 0.6);
+            driveStraightGyro(475, 0.6);
             sleep(400);
             driveStraightGyro(200, 0.2);
             sleep(300);
@@ -706,7 +715,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-380, 0.5);
             turnTankGyro(-37, 0.5);
-            driveStraightGyro(-1000, 0.7);
+            driveStraightGyro(-950, 0.7);
             sleep(400);
             driveStraightGyro(-280, 0.15);
             sleep(400);
@@ -718,11 +727,11 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 }
             }
             sleep(400);
-            driveStraightGyro(150, 0.3);
+            driveStraightGyro(125, 0.3);
             sleep(400);
             turnTankGyro(67, 0.5);
             sleep(400);
-            driveStraightGyro(450, 0.6);
+            driveStraightGyro(500, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
