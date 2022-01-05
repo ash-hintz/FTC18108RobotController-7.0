@@ -357,7 +357,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
     }
 
-    public void detectDuckPos() {
+    public void rightDetectDuckPos() {
         while (true) {
             // getUpdatedRecognitions() will return null if no new information is available since
             // the last time that call was made.
@@ -606,12 +606,12 @@ public class RedLeft_Autonomous extends LinearOpMode {
         sleep(1250);
         driveStraightGyro(150, 0.3);
         sleep(1000);
-        detectDuckPos();
+        rightDetectDuckPos();
 
 
         if (shippingLevel == 0) {
-            turnTankGyro(-37, 0.1);
-            driveStraightGyro(450, 0.6);
+            turnTankGyro(-37, 0.5);
+            driveStraightGyro(650, 0.6);
             sleep(500);
             while (true) {
                 motorA.setTargetPosition(firstLevel);
@@ -628,7 +628,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-500, 0.5);
             turnTankGyro(-36, 0.5);
-            driveStraightGyro(-950, 0.7);
+            driveStraightGyro(-980, 0.7);
             sleep(400);
             driveStraightGyro(-200, 0.15);
             sleep(400);
@@ -644,7 +644,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(68, 0.5);
             sleep(400);
-            driveStraightGyro(550, 0.6);
+            driveStraightGyro(480, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
@@ -658,8 +658,8 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 1) {
-            turnTankGyro(-12, 0.1);
-            driveStraightGyro(400, 0.6);
+            turnTankGyro(-15, 0.1);
+            driveStraightGyro(650, 0.6);
             sleep(500);
             while (true) {
                 motorA.setTargetPosition(secondLevel);
@@ -676,7 +676,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-400, 0.5);
             turnTankGyro(-36, 0.5);
-            driveStraightGyro(-950, 0.7);
+            driveStraightGyro(-1100, 0.7);
             sleep(400);
             driveStraightGyro(-200, 0.15);
             sleep(400);
@@ -692,7 +692,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(70, 0.5);
             sleep(400);
-            driveStraightGyro(450, 0.6);
+            driveStraightGyro(400, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
@@ -707,7 +707,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 2) {
             turnTankGyro(5, 0.1);
-            driveStraightGyro(475, 0.6);
+            driveStraightGyro(700, 0.6);
             sleep(400);
             driveStraightGyro(200, 0.2);
             sleep(300);
@@ -715,7 +715,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(-380, 0.5);
             turnTankGyro(-37, 0.5);
-            driveStraightGyro(-950, 0.7);
+            driveStraightGyro(-1100, 0.7);
             sleep(400);
             driveStraightGyro(-280, 0.15);
             sleep(400);
@@ -731,7 +731,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(67, 0.5);
             sleep(400);
-            driveStraightGyro(500, 0.6);
+            driveStraightGyro(440, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);

@@ -51,9 +51,9 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="LM2_2Drivers")
+@TeleOp(name="LM3_2Drivers")
 // @Disabled
-public class LM2_2Drivers extends LinearOpMode {
+public class LM3_2Drivers extends LinearOpMode {
 
     // Declare OpMode members
     private ElapsedTime runtime = new ElapsedTime();

@@ -32,15 +32,30 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.List;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -61,12 +76,26 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motor0, motor1, motor2, motor3, motorA, motorC;
-    private Servo servoA;
+    private DcMotor motor0 = null;
+    private DcMotor motor1 = null;
+    private DcMotor motor2 = null;
+    private DcMotor motor3 = null;
+    private DcMotor motorA = null;
+    private DcMotor motorC = null;
+    private Servo servoA = null;
+    private CRServo servoB = null;
+    private CRServo servoC = null;
+    private CRServo servoD = null;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
+    int shippingLevel = 0;
+    int firstLevel = 400;
+    int secondLevel = 750;
+    int thirdLevel = 1150;
+
+
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -78,7 +107,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -122,7 +151,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
@@ -137,6 +166,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        resetAngle();
 
         currentAngle = getAngle();
         startAngle = currentAngle;
@@ -144,18 +174,18 @@ public class BlueRight_Autonomous extends LinearOpMode {
         if (angle <= 0) {
             // Start Right turn
             motor0.setPower(power);
-            motor1.setPower(-1*power);
+            motor1.setPower(-1 * power);
             motor2.setPower(power);
-            motor3.setPower(-1*power);
+            motor3.setPower(-1 * power);
 
             while (true) {
                 currentAngle = getAngle();
 
                 if (currentAngle <= 0.4 * angle) {
-                    motor0.setPower(0.4*power);
-                    motor1.setPower(-0.4*power);
-                    motor2.setPower(0.4*power);
-                    motor3.setPower(-0.4*power);
+                    motor0.setPower(0.4 * power);
+                    motor1.setPower(-0.4 * power);
+                    motor2.setPower(0.4 * power);
+                    motor3.setPower(-0.4 * power);
                 }
 
                 // Stop turning when the turned angle = requested angle
@@ -167,29 +197,28 @@ public class BlueRight_Autonomous extends LinearOpMode {
                     break;
                 }
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
                         motor3.getCurrentPosition());
                 telemetry.update();
             }
-        }
-        else {
+        } else {
             // Start Left turn
-            motor0.setPower(-1*power);
+            motor0.setPower(-1 * power);
             motor1.setPower(power);
-            motor2.setPower(-1*power);
+            motor2.setPower(-1 * power);
             motor3.setPower(power);
 
             while (true) {
                 currentAngle = getAngle();
 
                 if (currentAngle >= 0.4 * angle) {
-                    motor0.setPower(-0.4*power);
-                    motor1.setPower(0.4*power);
-                    motor2.setPower(-0.4*power);
-                    motor3.setPower(0.4*power);
+                    motor0.setPower(-0.4 * power);
+                    motor1.setPower(0.4 * power);
+                    motor2.setPower(-0.4 * power);
+                    motor3.setPower(0.4 * power);
                 }
 
                 // Stop turning when the turned angle = requested angle
@@ -201,7 +230,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                     break;
                 }
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -252,6 +281,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        resetAngle();
 
         if (motorDistance >= 0) {
             // Start driving forward
@@ -272,7 +302,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
                 Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -280,7 +310,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 telemetry.update();
 
                 // Stop driving when Motor Encoder Avg. >= motorDistance
-                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 >= motorDistance) {
+                if ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition()) / 4 >= motorDistance) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -308,7 +338,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
                 Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 telemetry.addData("Gyro Angle", "(%.2f)", angles.firstAngle);
-                telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+                telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                         motor0.getCurrentPosition(),
                         motor1.getCurrentPosition(),
                         motor2.getCurrentPosition(),
@@ -316,7 +346,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
                 telemetry.update();
 
                 // Stop driving when Motor Encoder Avg. <= motorDistance
-                if ((motor0.getCurrentPosition()+motor1.getCurrentPosition()+motor2.getCurrentPosition()+motor3.getCurrentPosition())/4 <= motorDistance) {
+                if ((motor0.getCurrentPosition() + motor1.getCurrentPosition() + motor2.getCurrentPosition() + motor3.getCurrentPosition()) / 4 <= motorDistance) {
                     motor0.setPower(0.0);
                     motor1.setPower(0.0);
                     motor2.setPower(0.0);
@@ -327,45 +357,189 @@ public class BlueRight_Autonomous extends LinearOpMode {
         }
     }
 
-    public void carouselTurn (double carouselDegrees, double carouselPower) {
+    public void leftDetectDuckPos() {
+        while (true) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
-        double cDegrees = carouselDegrees;
-        double cPower = carouselPower;
+            if (updatedRecognitions == null) {
+                motor0.setPower(-0.04);
+                motor1.setPower(0.04);
+                motor2.setPower(-0.04);
+                motor3.setPower(0.04);
 
-        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                if (getAngle() >= 10) {
+                    motor0.setPower(-0.02);
+                    motor1.setPower(0.02);
+                    motor2.setPower(-0.02);
+                    motor3.setPower(0.02);
+                }
+                else if (getAngle() >= 30) {
+                    motor0.setPower(-0.01);
+                    motor1.setPower(0.01);
+                    motor2.setPower(-0.01);
+                    motor3.setPower(0.01);
+                }
+            }
 
-        // Carousel moving left
-        if (cDegrees <= 0) {
+            if (updatedRecognitions != null) {
+                    /* motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    */
+                motorA.setTargetPosition(0);
 
-            while (true) {
-                motorC.setPower(-cPower);
-                telemetry.addData("Encoder:",  "MC: %3d",
-                        motorC.getCurrentPosition());
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
                 telemetry.update();
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
 
-                if (motorC.getCurrentPosition() <= cDegrees) {
-                    motorC.setPower(0.0);
-                    break;
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                            recognition.getLeft());
+                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                            recognition.getRight());
+
+                    i++;
+
+                    if (recognition.getLabel() != "Duck") {
+                        /*
+                        motor0.setPower(0.1);
+                        motor1.setPower(-0.1);
+                        motor2.setPower(0.1);
+                        motor3.setPower(-0.1);
+                        */
+                    }
+
+                    else if (recognition.getLabel() == ("Duck")) {
+                        motor0.setPower(0.0);
+                        motor1.setPower(0.0);
+                        motor2.setPower(0.0);
+                        motor3.setPower(0.0);
+
+                        while (true) {
+                            if (getAngle() >= 0 && getAngle() < 10) {
+                                while (true) {
+                                    motorA.setTargetPosition(firstLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() > 10 && getAngle() < 30) {
+                                shippingLevel = 1;
+                                while (true) {
+                                    motorA.setTargetPosition(secondLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() > 30) {
+                                shippingLevel = 2;
+                                while (true) {
+                                    motorA.setTargetPosition(thirdLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                motorA.setPower(0.0);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        break;
+                    }
                 }
             }
-        }
-        // Carousel moving right
-        if (cDegrees > 0) {
 
-            while (true) {
-                motorC.setPower(cPower);
-
-                if (motorC.getCurrentPosition() >= cDegrees) {
-                    motorC.setPower(0.0);
-                    break;
-                }
+            if  (shippingLevel == 0 && motorA.getCurrentPosition() >= firstLevel) {
+                break;
             }
+            if  (shippingLevel == 1 && motorA.getCurrentPosition() >= secondLevel) {
+                break;
+            }
+            if  (shippingLevel == 2 && motorA.getCurrentPosition() >= thirdLevel) {
+                break;
+            }
+
         }
     }
 
+
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
+
+        //  Setup IMU configurations
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        telemetry.addData("Mode", "IMU calibrating...");
+        telemetry.update();
+
+        int startPos = 0;
+        int endPos = 0;
+
+
+        /* int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewID);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode)
+            {
+                RobotLog.vv("OpenCV error code", String.valueOf(errorCode));
+            }
+        }); */
+
+
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
+        initVuforia();
+        initTfod();
+
+
+        /**
+         * Activate TensorFlow Object Detection before we wait for the start command.
+         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         **/
+        if (tfod != null) {
+            tfod.activate();
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 16/9).
+            tfod.setZoom(2.5, 16.0 / 9.0);
+        }
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -376,16 +550,12 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
+        // servoA = hardwareMap.get(Servo.class, "servoA");
         servoA = hardwareMap.get(Servo.class, "servoA");
+        servoB = hardwareMap.get(CRServo.class, "servoB");
+        servoC = hardwareMap.get(CRServo.class, "servoC");
+        servoD = hardwareMap.get(CRServo.class, "servoD");
 
-        // Setup IMU configurations
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
-        telemetry.update();
 
         // Setup DC Motor configurations
         // Most robots need the motor on one side to be reversed to drive forward
@@ -403,31 +573,18 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         // make sure the IMU gyro is calibrated before continuing.
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
             sleep(50);
             idle();
         }
 
-        // Send telemetry message to indicate successful Encoder reset
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
-                motor0.getCurrentPosition(),
-                motor1.getCurrentPosition(),
-                motor2.getCurrentPosition(),
-                motor3.getCurrentPosition());
-        telemetry.addData("IMU calib status", imu.getCalibrationStatus().toString());
-        telemetry.update();
-
-        // Wait for the game to start (driver presses PLAY)
-        waitForStart();
-        runtime.reset();
+        motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -437,97 +594,254 @@ public class BlueRight_Autonomous extends LinearOpMode {
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
-        // START AUTONOMOUS PROGRAM
-
-        parameters.loggingEnabled = false;
-        parameters.loggingTag = "IMU";
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        telemetry.addData("Mode", "IMU calibrating...");
+        /** Wait for the game to begin */
+        telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
+        waitForStart();
+        runtime.reset();
+
+        // START AUTONOMOUS PROGRAM
 
         servoA.setPosition(0.10);
         sleep(1250);
-        motorA.setPower(0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() >= 1000) {
-                motorA.setPower(0.0);
-                break;
+        driveStraightGyro(200, 0.3);
+        sleep(1000);
+        leftDetectDuckPos();
+
+
+        if (shippingLevel == 0) {
+            turnTankGyro(37, 0.5);
+            driveStraightGyro(420, 0.6);
+            sleep(500);
+            while (true) {
+                motorA.setTargetPosition(firstLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(200, 0.2);
+            sleep(400);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-500, 0.5);
+            turnTankGyro(-36, 0.5);
+            driveStraightGyro(-980, 0.7);
+            sleep(400);
+            driveStraightGyro(-200, 0.15);
+            sleep(400);
+            motorC.setPower(0.09);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(150, 0.3);
+            sleep(400);
+            turnTankGyro(68, 0.5);
+            sleep(400);
+            driveStraightGyro(480, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(0);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
             }
         }
 
-        driveStraightGyro(250,0.5);
-        sleep(250);
-        turnTankGyro(65,0.5);
-        sleep(250);
-        imu.initialize(parameters);
-        driveStraightGyro(750,0.5);
-        sleep(250);
-        turnTankGyro(-65,0.5);
-        imu.initialize(parameters);
-
-        motorA.setPower(0.7);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() >= 1100) {
-                motorA.setPower(0.0);
-                break;
+        if (shippingLevel == 1) {
+            turnTankGyro(15, 0.1);
+            driveStraightGyro(400, 0.6);
+            sleep(500);
+            while (true) {
+                motorA.setTargetPosition(secondLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(200, 0.2);
+            sleep(400);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-400, 0.5);
+            turnTankGyro(-36, 0.5);
+            driveStraightGyro(-1100, 0.7);
+            sleep(400);
+            driveStraightGyro(-200, 0.15);
+            sleep(400);
+            motorC.setPower(0.09);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(150, 0.3);
+            sleep(400);
+            turnTankGyro(70, 0.5);
+            sleep(400);
+            driveStraightGyro(400, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(0);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
             }
         }
 
-        driveStraightGyro(260,0.3);
-        sleep(250);
-        servoA.setPosition(0.30);
-        sleep(250);
-        driveStraightGyro(-400, 0.35);
-        sleep(250);
-        turnTankGyro(78, 0.6);
-        imu.initialize(parameters);
-        driveStraightGyro(-1650, 0.7);
-        sleep(250);
-        turnTankGyro(-55, 0.15);
-        imu.initialize(parameters);
-        driveStraightGyro(-600, 0.15);
-        sleep(500);
-        motorC.setPower(1.00);
-        while(true) {
-            if (motorC.getCurrentPosition() >= 2325) {
-                motorC.setPower(0.00);
-                break;
+        if (shippingLevel == 2) {
+            turnTankGyro(11.5, 0.15);
+            driveStraightGyro(1050, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(thirdLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(250, 0.2);
+            sleep(300);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-380, 0.5);
+            turnTankGyro(37, 0.5);
+            driveStraightGyro(-850, 0.7);
+            sleep(400);
+            turnTankGyro(-80, 0.4);
+            driveStraightGyro(-750, 0.3);
+            sleep(400);
+            motorC.setPower(0.10);
+            while (true) {
+                if (motorC.getCurrentPosition() >= 450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(125, 0.3);
+            sleep(400);
+            turnTankGyro(-10, 0.5);
+            sleep(400);
+            driveStraightGyro(440, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(0);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
             }
         }
-        sleep(500);
-        turnTankGyro(-35,0.6);
-        imu.initialize(parameters);
-        driveStraightGyro(800,0.5);
-        sleep(250);
-        servoA.setPosition(0.10);
-        motorA.setPower(-0.4);
-        while (true) {
-            telemetry.addData("Encoder:", "MA: %3d", motorA.getCurrentPosition());
-            telemetry.update();
-            if (motorA.getCurrentPosition() <= 0.0) {
-                motorA.setPower(0.0);
-                break;
-            }
-        }
-
 
         // END AUTONOMOUS PROGRAM
 
-
         // Send telemetry message to indicate successful Encoder reset
         // telemetry.setAutoClear(false);
-        telemetry.addData("Encoders:",  "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
+        telemetry.addData("Encoders:", "M0: %3d  M1:%3d  M2:%3d  M3:%3d",
                 motor0.getCurrentPosition(),
                 motor1.getCurrentPosition(),
                 motor2.getCurrentPosition(),
                 motor3.getCurrentPosition());
         telemetry.update();
-        sleep(10000);
+    }
+
+    /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
+     * the following 4 detectable objects
+     *  0: Ball,
+     *  1: Cube,
+     *  2: Duck,
+     *  3: Marker (duck location tape marker)
+     *
+     *  Two additional model assets are available which only contain a subset of the objects:
+     *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
+     *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
+     */
+    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
+    private static final String[] LABELS = {
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
+    };
+
+
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.z
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
+     */
+    private static final String VUFORIA_KEY =
+            "ARGTPc3/////AAABmQPsjNjUvkhEpOekRVJS6hFuyqQd8MDqXOad0+ftSCpchv3jSVN+LPwH9lupDnWlh91rhm3M2+DFMZ9QktxCXz/8BYKSHVvfqlqPnHwLLO+xHrcd9MxtmUSG6HvzphpqmAq+2plmXSIDCRJ1f8qgMDFXy3S3LVFzGGm95EwOp/wr1FtolYp+MqrYwqn90b2O5ZzGvYzi14WdmqKIlo3QqE9SRc3wZe/8TKTGXdYmM7rkWwpPqmlhSCEdQU09jSco6FQGX+WxPbv88CTeYbhn6UrDBWehTx7Ns+Hjoers9yrs0MWkWEaEeUCSuP+6R0UbuXOjrgr0vEmpcDZh2z2ARVKlqXvOKzAr66TFHBWA6uH2";
+
+    /**
+     * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
+     * localization engine.
+     */
+    private VuforiaLocalizer vuforia;
+
+    /**
+     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * Detection engine.
+     */
+    private TFObjectDetector tfod;
+
+    /**
+     * Initialize the Vuforia localization engine.
+     */
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
+    }
+
+    /**
+     * Initialize the TensorFlow Object Detection engine.
+     */
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.isModelTensorFlow2 = true;
+        tfodParameters.inputSize = 320;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 }
-
