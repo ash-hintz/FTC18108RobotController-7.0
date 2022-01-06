@@ -357,6 +357,134 @@ public class BlueRight_Autonomous extends LinearOpMode {
         }
     }
 
+    public void rightDetectDuckPos() {
+        while (true) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+
+            if (updatedRecognitions == null) {
+                motor0.setPower(0.04);
+                motor1.setPower(-0.04);
+                motor2.setPower(0.04);
+                motor3.setPower(-0.04);
+
+                if (getAngle() <= -10) {
+                    motor0.setPower(0.02);
+                    motor1.setPower(-0.02);
+                    motor2.setPower(0.02);
+                    motor3.setPower(-0.02);
+                }
+                else if (getAngle() <= -30) {
+                    motor0.setPower(0.01);
+                    motor1.setPower(-0.01);
+                    motor2.setPower(0.01);
+                    motor3.setPower(-0.01);
+                }
+            }
+
+            if (updatedRecognitions != null) {
+                    /* motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    */
+                motorA.setTargetPosition(0);
+
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                telemetry.update();
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                            recognition.getLeft());
+                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                            recognition.getRight());
+
+                    i++;
+
+                    if (recognition.getLabel() != "Duck") {
+                        /*
+                        motor0.setPower(0.1);
+                        motor1.setPower(-0.1);
+                        motor2.setPower(0.1);
+                        motor3.setPower(-0.1);
+                        */
+                    }
+
+                    else if (recognition.getLabel() == ("Duck")) {
+                        motor0.setPower(0.0);
+                        motor1.setPower(0.0);
+                        motor2.setPower(0.0);
+                        motor3.setPower(0.0);
+
+                        while (true) {
+                            if (getAngle() <= 0 && getAngle() > -10) {
+                                while (true) {
+                                    motorA.setTargetPosition(firstLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() < -10 && getAngle() > -30) {
+                                shippingLevel = 1;
+                                while (true) {
+                                    motorA.setTargetPosition(secondLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() < -30) {
+                                shippingLevel = 2;
+                                while (true) {
+                                    motorA.setTargetPosition(thirdLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                motorA.setPower(0.0);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        break;
+                    }
+                }
+            }
+
+            if  (shippingLevel == 0 && motorA.getCurrentPosition() >= firstLevel) {
+                break;
+            }
+            if  (shippingLevel == 1 && motorA.getCurrentPosition() >= secondLevel) {
+                break;
+            }
+            if  (shippingLevel == 2 && motorA.getCurrentPosition() >= thirdLevel) {
+                break;
+            }
+
+        }
+    }
+
     public void leftDetectDuckPos() {
         while (true) {
             // getUpdatedRecognitions() will return null if no new information is available since
@@ -364,10 +492,10 @@ public class BlueRight_Autonomous extends LinearOpMode {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             if (updatedRecognitions == null) {
-                motor0.setPower(-0.04);
-                motor1.setPower(0.04);
-                motor2.setPower(-0.04);
-                motor3.setPower(0.04);
+                motor0.setPower(-0.02);
+                motor1.setPower(0.02);
+                motor2.setPower(-0.02);
+                motor3.setPower(0.02);
 
                 if (getAngle() >= 10) {
                     motor0.setPower(-0.02);
@@ -606,7 +734,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
         sleep(1250);
         driveStraightGyro(200, 0.3);
         sleep(1000);
-        leftDetectDuckPos();
+        rightDetectDuckPos();
 
 
         if (shippingLevel == 0) {
@@ -706,8 +834,8 @@ public class BlueRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(11.5, 0.15);
-            driveStraightGyro(1050, 0.6);
+            turnTankGyro(77.5, 0.3);
+            driveStraightGyro(450, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(thirdLevel);
@@ -723,15 +851,15 @@ public class BlueRight_Autonomous extends LinearOpMode {
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-380, 0.5);
-            turnTankGyro(37, 0.5);
-            driveStraightGyro(-850, 0.7);
+            turnTankGyro(45, 0.5);
+            driveStraightGyro(-1350, 0.7);
             sleep(400);
-            turnTankGyro(-80, 0.4);
-            driveStraightGyro(-750, 0.3);
+            turnTankGyro(-68, 0.4);
+            driveStraightGyro(-200, 0.3);
             sleep(400);
-            motorC.setPower(0.10);
+            motorC.setPower(-0.10);
             while (true) {
-                if (motorC.getCurrentPosition() >= 450) {
+                if (motorC.getCurrentPosition() <= -450) {
                     motorC.setPower(0.0);
                     break;
                 }
@@ -741,7 +869,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(-10, 0.5);
             sleep(400);
-            driveStraightGyro(440, 0.6);
+            driveStraightGyro(500, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
