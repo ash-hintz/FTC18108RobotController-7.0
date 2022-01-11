@@ -364,10 +364,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             if (updatedRecognitions == null) {
-                motor0.setPower(0.04);
-                motor1.setPower(-0.04);
-                motor2.setPower(0.04);
-                motor3.setPower(-0.04);
+                motor0.setPower(0.02);
+                motor1.setPower(-0.01);
+                motor2.setPower(0.02);
+                motor3.setPower(-0.02);
 
                 if (getAngle() <= -10) {
                     motor0.setPower(0.02);
@@ -627,8 +627,8 @@ public class RedLeft_Autonomous extends LinearOpMode {
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-500, 0.5);
-            turnTankGyro(-44, 0.5);
-            driveStraightGyro(-980, 0.7);
+            turnTankGyro(-41 , 0.5);
+            driveStraightGyro(-1100, 0.7);
             sleep(400);
             driveStraightGyro(-200, 0.15);
             sleep(400);
@@ -642,9 +642,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(150, 0.3);
             sleep(400);
-            turnTankGyro(70, 0.5);
+            turnTankGyro(72, 0.5);
             sleep(400);
-            driveStraightGyro(550, 0.6);
+            driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(0);
@@ -658,7 +658,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 1) {
-            turnTankGyro(-8, 0.1);
+            turnTankGyro(-10, 0.1);
             driveStraightGyro(680, 0.6);
             sleep(500);
             while (true) {
@@ -690,7 +690,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(150, 0.3);
             sleep(400);
-            turnTankGyro(70, 0.5);
+            turnTankGyro(68, 0.5);
             sleep(400);
             driveStraightGyro(630, 0.6);
             sleep(400);
