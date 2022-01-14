@@ -64,7 +64,7 @@ public class LM3_2Drivers extends LinearOpMode {
     private DcMotor motorA = null;
     private DcMotor motorC = null;
     private Servo servoA;
-    private CRServo servoC;
+    private CRServo servoB;
     // Define Servo class members
     static final double INCREMENT   = 0.03;     // amount to slew servo each CYCLE_MS cycle
     static final int    CYCLE_MS    =   30;     // period of each cycle
@@ -89,7 +89,7 @@ public class LM3_2Drivers extends LinearOpMode {
     double rightPower;
     double armPower;
     double armHeightMin = -10;
-    double armHeightMax = 1000;
+    double armHeightMax = 1050;
     double carouselPower = 0.10;
 
     // Local variable to control Arm / Carousel / Class
@@ -113,7 +113,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motorA = hardwareMap.get(DcMotor.class, "motorA");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         servoA = hardwareMap.get(Servo.class, "servoA");
-        servoC = hardwareMap.get(CRServo.class, "servoC");
+        servoB = hardwareMap.get(CRServo.class, "servoB");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -196,14 +196,6 @@ public class LM3_2Drivers extends LinearOpMode {
             if (gamepad2.a)
                 motorC.setPower(0.0);
 
-            // Set new max height for arm
-            if (gamepad2.dpad_up) {
-                armHeightMax = 1300;
-            }
-            if (gamepad2.dpad_down) {
-                armHeightMax = 1000;
-            }
-
             // Slew the servo, according to the rampUp (direction) variable.
 
             if (gamepad2.left_bumper) {
@@ -222,6 +214,19 @@ public class LM3_2Drivers extends LinearOpMode {
                     Aposition = AMIN_POS;
                 }
             }
+
+            if (gamepad2.dpad_up) {
+                servoB.setPower(-1.0);
+            }
+
+            if (gamepad2.dpad_down) {
+                servoB.setPower(1.0);
+            }
+
+            if (gamepad2.dpad_right) {
+                servoB.setPower(0.0);
+            }
+
 
 
             // Set the servo to the new position and pause;
