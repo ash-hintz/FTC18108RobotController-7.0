@@ -91,9 +91,9 @@ public class BlueRight_Autonomous extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 400;
+    int firstLevel = 500;
     int secondLevel = 800;
-    int thirdLevel = 1150;
+    int thirdLevel = 1200;
 
 
 
@@ -759,7 +759,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1400, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-275, 0.3);
+            driveStraightGyro(-225, 0.3);
             sleep(400);
             motorC.setPower(-0.09);
             while (true) {
@@ -776,7 +776,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(650, 0.6);
             sleep(400);
             while (true) {
-                motorA.setTargetPosition(0);
+                motorA.setTargetPosition(-50);
                 motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorA.setPower(0.4);
                 if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
@@ -825,7 +825,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
-                motorA.setTargetPosition(0);
+                motorA.setTargetPosition(-50);
                 motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorA.setPower(0.4);
                 if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
@@ -874,7 +874,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
-                motorA.setTargetPosition(0);
+                motorA.setTargetPosition(-50);
                 motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 motorA.setPower(0.4);
                 if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {

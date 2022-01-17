@@ -91,9 +91,9 @@ public class BlueLeft_Autonomous extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 400;
-    int secondLevel = 750;
-    int thirdLevel = 1150;
+    int firstLevel = 500;
+    int secondLevel = 800;
+    int thirdLevel = 1200;
 
 
 
@@ -630,6 +630,15 @@ public class BlueLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(-56.5, 0.5);
             driveStraightGyro(-2300, 0.7);
+            while (true) {
+                motorA.setTargetPosition(-50);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
         }
 
         if (shippingLevel == 1) {
@@ -653,6 +662,15 @@ public class BlueLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(-58, 0.5);
             driveStraightGyro(-2300, 0.7);
+            while (true) {
+                motorA.setTargetPosition(-50);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
         }
 
         if (shippingLevel == 2) {
@@ -676,6 +694,15 @@ public class BlueLeft_Autonomous extends LinearOpMode {
             sleep(400);
             turnTankGyro(-58, 0.5);
             driveStraightGyro(-2300, 0.7);
+            while (true) {
+                motorA.setTargetPosition(-50);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
         }
 
         // END AUTONOMOUS PROGRAM

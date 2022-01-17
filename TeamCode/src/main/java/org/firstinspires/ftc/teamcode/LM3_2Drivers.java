@@ -89,7 +89,7 @@ public class LM3_2Drivers extends LinearOpMode {
     double rightPower;
     double armPower;
     double armHeightMin = -10;
-    double armHeightMax = 1050;
+    double armHeightMax = 1300;
     double carouselPower = 0.10;
 
     // Local variable to control Arm / Carousel / Class
