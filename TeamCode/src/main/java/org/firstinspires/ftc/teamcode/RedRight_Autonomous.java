@@ -642,7 +642,7 @@ public class RedRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 1) {
-            turnTankGyro(44, 0.3);
+            turnTankGyro(40, 0.3);
             driveStraightGyro(550, 0.6);
             sleep(400);
             while (true) {
@@ -674,7 +674,7 @@ public class RedRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(61.5, 0.3);
+            turnTankGyro(59, 0.3);
             driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {

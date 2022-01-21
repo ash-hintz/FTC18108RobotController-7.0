@@ -610,7 +610,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         servoA.setPosition(0.10);
         sleep(1250);
-        driveStraightGyro(150, 0.3);
+        driveStraightGyro(200, 0.3);
         sleep(1000);
         rightDetectDuckPos();
 
@@ -744,9 +744,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(125, 0.3);
             sleep(400);
-            turnTankGyro(67, 0.5);
+            turnTankGyro(65, 0.5);
             sleep(400);
-            driveStraightGyro(480, 0.6);
+            driveStraightGyro(550, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(-50);

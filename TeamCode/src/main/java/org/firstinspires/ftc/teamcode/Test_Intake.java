@@ -593,8 +593,8 @@ public class Test_Intake extends LinearOpMode {
 
         // START AUTONOMOUS PROGRAM
 
-        servoB.setPower(-1.0);
-        sleep(4000);
+        motorA.setPower(-0.2);
+        sleep(2000);
 
         // END AUTONOMOUS PROGRAM
 
