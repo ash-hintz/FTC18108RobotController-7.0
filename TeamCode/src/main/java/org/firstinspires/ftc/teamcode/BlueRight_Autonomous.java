@@ -808,7 +808,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1350, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-250, 0.3);
+            driveStraightGyro(-275, 0.3);
             sleep(400);
             motorC.setPower(-0.07);
             while (true) {
@@ -857,7 +857,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1350, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-250, 0.3);
+            driveStraightGyro(-275, 0.3);
             sleep(400);
             motorC.setPower(-0.07);
             while (true) {

@@ -90,7 +90,7 @@ public class LM3_2Drivers extends LinearOpMode {
     double armPower;
     double armHeightMin = -10;
     double armHeightMax = 1300;
-    double carouselPower = 0.10;
+    double carouselPower = 0.12;
 
     // Local variable to control Arm / Carousel / Class
     boolean armIsMoving = false;
@@ -166,8 +166,8 @@ public class LM3_2Drivers extends LinearOpMode {
             }
 
             else {
-                leftPower = Range.clip(drive + turn, -0.7, 0.7);
-                rightPower = Range.clip(drive - turn, -0.7, 0.7);
+                leftPower = Range.clip(drive + turn, -0.85, 0.85);
+                rightPower = Range.clip(drive - turn, -0.85, 0.85);
             }
 
             // Send calculated power to wheels
