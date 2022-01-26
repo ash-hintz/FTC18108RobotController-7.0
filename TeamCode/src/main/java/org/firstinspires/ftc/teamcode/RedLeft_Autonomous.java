@@ -712,7 +712,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(6, 0.1);
+            turnTankGyro(2, 0.1);
             driveStraightGyro(800, 0.6);
             sleep(400);
             while (true) {
