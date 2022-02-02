@@ -739,7 +739,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 0) {
             turnTankGyro(32, 0.3);
-            driveStraightGyro(550, 0.6);
+            driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(firstLevel);
@@ -759,7 +759,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1400, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-245, 0.3);
+            driveStraightGyro(-275, 0.3);
             sleep(400);
             motorC.setPower(-0.07);
             while (true) {
@@ -788,7 +788,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 1) {
             turnTankGyro(51.5, 0.3);
-            driveStraightGyro(550, 0.6);
+            driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(secondLevel);
@@ -808,7 +808,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1350, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-290, 0.3);
+            driveStraightGyro(-270, 0.3);
             sleep(400);
             motorC.setPower(-0.07);
             while (true) {
@@ -836,8 +836,9 @@ public class BlueRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(77.5, 0.3);
-            driveStraightGyro(450, 0.6);
+            turnTankGyro(67.5, 0.3);
+            sleep(400);
+            driveStraightGyro(625, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(thirdLevel);
@@ -857,7 +858,7 @@ public class BlueRight_Autonomous extends LinearOpMode {
             driveStraightGyro(-1350, 0.7);
             sleep(400);
             turnTankGyro(-68, 0.4);
-            driveStraightGyro(-275, 0.3);
+            driveStraightGyro(-270, 0.3);
             sleep(400);
             motorC.setPower(-0.07);
             while (true) {

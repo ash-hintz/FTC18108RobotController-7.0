@@ -92,7 +92,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
     double armPower;
     int shippingLevel = 0;
     int firstLevel = 500;
-    int secondLevel = 800;
+    int secondLevel = 840;
     int thirdLevel = 1200;
 
 
@@ -610,7 +610,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
 
 
         if (shippingLevel == 0) {
-            turnTankGyro(-20, 0.3);
+            turnTankGyro(-21, 0.3);
             driveStraightGyro(590, 0.6);
             sleep(400);
             while (true) {
@@ -643,7 +643,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 1) {
             turnTankGyro(-13, 0.3);
-            driveStraightGyro(560, 0.6);
+            driveStraightGyro(570, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(secondLevel);
@@ -675,7 +675,7 @@ public class BlueLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 2) {
             turnTankGyro(5, 0.3);
-            driveStraightGyro(540, 0.6);
+            driveStraightGyro(590, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(thirdLevel);

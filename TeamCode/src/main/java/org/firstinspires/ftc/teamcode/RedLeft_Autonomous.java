@@ -617,7 +617,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 0) {
             turnTankGyro(-27, 0.5);
-            driveStraightGyro(850, 0.6);
+            driveStraightGyro(800, 0.6);
             sleep(500);
             while (true) {
                 motorA.setTargetPosition(firstLevel);
@@ -665,7 +665,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
         if (shippingLevel == 1) {
             turnTankGyro(-10, 0.1);
-            driveStraightGyro(700, 0.6);
+            driveStraightGyro(630, 0.6);
             sleep(500);
             while (true) {
                 motorA.setTargetPosition(secondLevel);
@@ -712,7 +712,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(2, 0.1);
+            turnTankGyro(3, 0.1);
             driveStraightGyro(800, 0.6);
             sleep(400);
             while (true) {
