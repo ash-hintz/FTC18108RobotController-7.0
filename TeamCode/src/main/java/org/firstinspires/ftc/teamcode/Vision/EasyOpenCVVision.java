@@ -26,17 +26,18 @@ public class EasyOpenCVVision extends OpenCvPipeline {
     // Color constants
     static final Scalar RED = new Scalar(255, 0, 0);
     static final Scalar GREEN = new Scalar(0, 255, 0);
+    static final Scalar BLUE = new Scalar(0, 0, 255);
 
     // Constants for determining the existence of shipping element based on the RED content
     final int ONE_SHIP_THRESHOLD = 150;
     final int NONE_SHIP_THRESHOLD = 50;
 
     // Upper-left point of the rectangle where shipping elemnt will be defined
-    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(35, 90);
+    static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(5, 90);
     // The width of the rectangle where the sh. el. will be defined
     static final int REGION_WIDTH = 70;
     // The height of the rectangle where the sh. el. will be defined
-    static final int REGION_HEIGHT = 90;
+    static final int REGION_HEIGHT = 120;
 
     // Creating the upper-left point of the rectangle where the rings will be defined
     Point region1_pointA = new Point(
@@ -70,7 +71,7 @@ public class EasyOpenCVVision extends OpenCvPipeline {
     // The width of the rectangle where the sh. el. will be defined
     static final int REGION2_WIDTH = 70;
     // The height of the rectangle where the sh. el. will be defined
-    static final int REGION2_HEIGHT = 90;
+    static final int REGION2_HEIGHT = 120;
 
     // Creating the upper-left point of the rectangle where the rings will be defined
     Point region2_pointA = new Point(
@@ -82,11 +83,11 @@ public class EasyOpenCVVision extends OpenCvPipeline {
             REGION2_TOPLEFT_ANCHOR_POINT.y + REGION2_HEIGHT);
 
     // Upper-left point of the rectangle where shipping elemnt will be defined
-    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(225, 90);
+    static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(245, 90);
     // The width of the rectangle where the sh. el. will be defined
     static final int REGION3_WIDTH = 70;
     // The height of the rectangle where the sh. el. will be defined
-    static final int REGION3_HEIGHT = 90;
+    static final int REGION3_HEIGHT = 120;
 
     // Creating the upper-left point of the rectangle where the rings will be defined
     Point region3_pointA = new Point(
@@ -129,6 +130,7 @@ public class EasyOpenCVVision extends OpenCvPipeline {
         avg2 = (int) Core.mean(region2_Cb).val[0];
         dataFromOpenCV.AVG2=avg2;
         avg3 = (int) Core.mean(region3_Cb).val[0];
+        dataFromOpenCV.AVG3=avg3;
 
         Imgproc.rectangle(
                 input, // Buffer to draw on

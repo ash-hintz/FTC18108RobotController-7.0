@@ -404,7 +404,50 @@ public class RedLeft_Test extends LinearOpMode {
             }
         });
 
-        telemetry.addData("Number of rings ", pipeline.position);
+        {
+            telemetry.clear();
+            telemetry.addData("Number of rings ", pipeline.position);
+            telemetry.addData("avg1", dataFromOpenCV.AVG1);
+            telemetry.addData("avg2", dataFromOpenCV.AVG2);
+            telemetry.update();
+            //TODO
+            //sleep(10000);
+            int ShElementPosition = 10;
+            if ((pipeline.position == EasyOpenCVVision.ShipPosition.LEFT)) {
+                ShElementPosition = 3;
+            }
+            if ((pipeline.position == EasyOpenCVVision.ShipPosition.CENTER)) {
+                ShElementPosition = 2;
+            }
+            if ((pipeline.position == EasyOpenCVVision.ShipPosition.NONE)) {
+                ShElementPosition = 1;
+            }
+            //Voltage regulation depending on the battery charge level
+            telemetry.addData("ShElementPosition", ShElementPosition);
+
+            telemetry.update();
+            boolean check = true;
+
+            //lifttime.reset();
+
+            // START AUTONOMOUS PROGRAM
+
+            if (ShElementPosition == 1 && check) {
+                driveStraightGyro(100, 0.5);
+            }
+
+            if (ShElementPosition == 2 && check) {
+                driveStraightGyro(100, 0.5);
+            }
+
+            if (ShElementPosition == 3 && check) {
+                driveStraightGyro(100, 0.5);
+            }
+
+            // END AUTONOMOUS PROGRAM
+        }
+
+        telemetry.addData("Duck Position: ", pipeline.position);
         telemetry.addData("avg1", dataFromOpenCV.AVG1);
         telemetry.addData("avg2", dataFromOpenCV.AVG2);
         telemetry.addData("avg3", dataFromOpenCV.AVG3);
@@ -478,10 +521,6 @@ public class RedLeft_Test extends LinearOpMode {
         telemetry.update();
         waitForStart();
         runtime.reset();
-
-        // START AUTONOMOUS PROGRAM
-
-        // END AUTONOMOUS PROGRAM
 
         // Send telemetry message to indicate successful Encoder reset
         // telemetry.setAutoClear(false);
