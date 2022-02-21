@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -89,7 +90,7 @@ public class LM3_2Drivers extends LinearOpMode {
     double rightPower;
     double armPower;
     double armHeightMin = -10;
-    double armHeightMax = 1300;
+    double armHeightMax = 1800;
     double carouselPower = 0.12;
 
     // Local variable to control Arm / Carousel / Class
@@ -117,10 +118,10 @@ public class LM3_2Drivers extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motor0.setDirection(DcMotor.Direction.REVERSE);
-        motor1.setDirection(DcMotor.Direction.FORWARD);
-        motor2.setDirection(DcMotor.Direction.REVERSE);
-        motor3.setDirection(DcMotor.Direction.FORWARD);
+        motor0.setDirection(DcMotor.Direction.FORWARD);
+        motor1.setDirection(DcMotor.Direction.REVERSE);
+        motor2.setDirection(DcMotor.Direction.FORWARD);
+        motor3.setDirection(DcMotor.Direction.REVERSE);
         motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
