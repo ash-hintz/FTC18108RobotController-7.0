@@ -50,16 +50,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
-// import org.firstinspires.ftc.teamcode.OpenCVExamples.PipelineStageSwitchingExample;
-// import org.firstinspires.ftc.teamcode.OpenCVExamples.WebcamExample;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
@@ -77,9 +70,9 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="RedLeft_Autonomous")
+@Autonomous(name="BlueRight_Autonomous")
 // @Disabled
-public class RedLeft_Autonomous extends LinearOpMode {
+public class BlueRight extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -102,7 +95,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
     int secondLevel = 800;
     int thirdLevel = 1200;
 
-    OpenCvWebcam webcam;
+
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -288,12 +281,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetAngle();
 
         if (motorDistance >= 0) {
@@ -377,10 +364,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             if (updatedRecognitions == null) {
-                motor0.setPower(0.025);
-                motor1.setPower(-0.025);
-                motor2.setPower(0.025);
-                motor3.setPower(-0.025);
+                motor0.setPower(0.03);
+                motor1.setPower(-0.03);
+                motor2.setPower(0.03);
+                motor3.setPower(-0.03);
 
                 if (getAngle() <= -10) {
                     motor0.setPower(0.02);
@@ -498,6 +485,134 @@ public class RedLeft_Autonomous extends LinearOpMode {
         }
     }
 
+    public void leftDetectDuckPos() {
+        while (true) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+
+            if (updatedRecognitions == null) {
+                motor0.setPower(-0.02);
+                motor1.setPower(0.02);
+                motor2.setPower(-0.02);
+                motor3.setPower(0.02);
+
+                if (getAngle() >= 10) {
+                    motor0.setPower(-0.02);
+                    motor1.setPower(0.02);
+                    motor2.setPower(-0.02);
+                    motor3.setPower(0.02);
+                }
+                else if (getAngle() >= 30) {
+                    motor0.setPower(-0.01);
+                    motor1.setPower(0.01);
+                    motor2.setPower(-0.01);
+                    motor3.setPower(0.01);
+                }
+            }
+
+            if (updatedRecognitions != null) {
+                    /* motor0.setPower(0.0);
+                    motor1.setPower(0.0);
+                    motor2.setPower(0.0);
+                    motor3.setPower(0.0);
+                    */
+                motorA.setTargetPosition(0);
+
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
+                telemetry.update();
+                // step through the list of recognitions and display boundary info.
+                int i = 0;
+                for (Recognition recognition : updatedRecognitions) {
+
+                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
+                            recognition.getLeft());
+                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
+                            recognition.getRight());
+
+                    i++;
+
+                    if (recognition.getLabel() != "Duck") {
+                        /*
+                        motor0.setPower(0.1);
+                        motor1.setPower(-0.1);
+                        motor2.setPower(0.1);
+                        motor3.setPower(-0.1);
+                        */
+                    }
+
+                    else if (recognition.getLabel() == ("Duck")) {
+                        motor0.setPower(0.0);
+                        motor1.setPower(0.0);
+                        motor2.setPower(0.0);
+                        motor3.setPower(0.0);
+
+                        while (true) {
+                            if (getAngle() >= 0 && getAngle() < 10) {
+                                while (true) {
+                                    motorA.setTargetPosition(firstLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() > 10 && getAngle() < 35) {
+                                shippingLevel = 1;
+                                while (true) {
+                                    motorA.setTargetPosition(secondLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (getAngle() > 35) {
+                                shippingLevel = 2;
+                                while (true) {
+                                    motorA.setTargetPosition(thirdLevel);
+                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                                    motorA.setPower(0.4);
+                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                        motorA.setPower(0.0);
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                                motorA.setPower(0.0);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        break;
+                    }
+                }
+            }
+
+            if  (shippingLevel == 0 && motorA.getCurrentPosition() >= firstLevel) {
+                break;
+            }
+            if  (shippingLevel == 1 && motorA.getCurrentPosition() >= secondLevel) {
+                break;
+            }
+            if  (shippingLevel == 2 && motorA.getCurrentPosition() >= thirdLevel) {
+                break;
+            }
+
+        }
+    }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -515,62 +630,22 @@ public class RedLeft_Autonomous extends LinearOpMode {
         int endPos = 0;
 
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
-
-        // OR...  Do Not Activate the Camera Monitor View
-        //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"));
-
-        /*
-         * Specify the image processing pipeline we wish to invoke upon receipt
-         * of a frame from the camera. Note that switching pipelines on-the-fly
-         * (while a streaming session is in flight) *IS* supported.
-         */
-        // webcam.setPipeline(new WebcamExample.SamplePipeline());
-
-        /*
-         * Open the connection to the camera device. New in v1.4.0 is the ability
-         * to open the camera asynchronously, and this is now the recommended way
-         * to do it. The benefits of opening async include faster init time, and
-         * better behavior when pressing stop during init (i.e. less of a chance
-         * of tripping the stuck watchdog)
-         *
-         * If you really want to open synchronously, the old method is still available.
-         */
-        webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener(
-        )
+        /* int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewID);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
             @Override
             public void onOpened()
             {
-                /*
-                 * Tell the webcam to start streaming images to us! Note that you must make sure
-                 * the resolution you specify is supported by the camera. If it is not, an exception
-                 * will be thrown.
-                 *
-                 * Keep in mind that the SDK's UVC driver (what OpenCvWebcam uses under the hood) only
-                 * supports streaming from the webcam in the uncompressed YUV image format. This means
-                 * that the maximum resolution you can stream at and still get up to 30FPS is 480p (640x480).
-                 * Streaming at e.g. 720p will limit you to up to 10FPS and so on and so forth.
-                 *
-                 * Also, we specify the rotation that the webcam is used in. This is so that the image
-                 * from the camera sensor can be rotated such that it is always displayed with the image upright.
-                 * For a front facing camera, rotation is defined assuming the user is looking at the screen.
-                 * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
-                 * away from the user.
-                 */
-                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
             public void onError(int errorCode)
             {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
+                RobotLog.vv("OpenCV error code", String.valueOf(errorCode));
             }
-        });
+        }); */
 
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -591,6 +666,7 @@ public class RedLeft_Autonomous extends LinearOpMode {
             // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
             // should be set to the value of the images used to create the TensorFlow Object Detection model
             // (typically 16/9).
+            tfod.setZoom(2.5, 16.0 / 9.0);
         }
 
         // Initialize the hardware variables. Note that the strings used here as parameters
@@ -662,9 +738,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
 
 
         if (shippingLevel == 0) {
-            turnTankGyro(-27, 0.5);
-            driveStraightGyro(800, 0.6);
-            sleep(500);
+            turnTankGyro(32, 0.3);
+            driveStraightGyro(600, 0.6);
+            sleep(400);
             while (true) {
                 motorA.setTargetPosition(firstLevel);
                 motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -674,27 +750,77 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     break;
                 }
             }
-            driveStraightGyro(200, 0.2);
-            sleep(400);
+            driveStraightGyro(250, 0.2);
+            sleep(300);
             servoA.setPosition(0.25);
             sleep(400);
-            driveStraightGyro(-500, 0.5);
-            turnTankGyro(-37, 0.5);
-            driveStraightGyro(-1100, 0.7);
+            driveStraightGyro(-380, 0.5);
+            turnTankGyro(45, 0.5);
+            driveStraightGyro(-1400, 0.7);
             sleep(400);
-            driveStraightGyro(-200, 0.15);
+            turnTankGyro(-68, 0.4);
+            driveStraightGyro(-275, 0.3);
             sleep(400);
-            motorC.setPower(0.09);
+            motorC.setPower(-0.07);
             while (true) {
-                if (motorC.getCurrentPosition() >= 450) {
+                if (motorC.getCurrentPosition() <= -450) {
                     motorC.setPower(0.0);
                     break;
                 }
             }
             sleep(400);
-            driveStraightGyro(150, 0.3);
+            driveStraightGyro(125, 0.3);
             sleep(400);
-            turnTankGyro(72, 0.5);
+            turnTankGyro(-10, 0.5);
+            sleep(400);
+            driveStraightGyro(650, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(-50);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+        }
+
+        if (shippingLevel == 1) {
+            turnTankGyro(51.5, 0.3);
+            driveStraightGyro(600, 0.6);
+            sleep(400);
+            while (true) {
+                motorA.setTargetPosition(secondLevel);
+                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                motorA.setPower(0.4);
+                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                    motorA.setPower(0.0);
+                    break;
+                }
+            }
+            driveStraightGyro(250, 0.2);
+            sleep(300);
+            servoA.setPosition(0.25);
+            sleep(400);
+            driveStraightGyro(-380, 0.5);
+            turnTankGyro(45, 0.5);
+            driveStraightGyro(-1350, 0.7);
+            sleep(400);
+            turnTankGyro(-68, 0.4);
+            driveStraightGyro(-270, 0.3);
+            sleep(400);
+            motorC.setPower(-0.07);
+            while (true) {
+                if (motorC.getCurrentPosition() <= -450) {
+                    motorC.setPower(0.0);
+                    break;
+                }
+            }
+            sleep(400);
+            driveStraightGyro(125, 0.3);
+            sleep(400);
+            turnTankGyro(-10, 0.5);
             sleep(400);
             driveStraightGyro(600, 0.6);
             sleep(400);
@@ -709,57 +835,10 @@ public class RedLeft_Autonomous extends LinearOpMode {
             }
         }
 
-        if (shippingLevel == 1) {
-            turnTankGyro(-10, 0.1);
-            driveStraightGyro(630, 0.6);
-            sleep(500);
-            while (true) {
-                motorA.setTargetPosition(secondLevel);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
-            driveStraightGyro(200, 0.2);
-            sleep(400);
-            servoA.setPosition(0.25);
-            sleep(400);
-            driveStraightGyro(-400, 0.5);
-            turnTankGyro(-37, 0.5);
-            driveStraightGyro(-1200, 0.7);
-            sleep(400);
-            driveStraightGyro(-200, 0.15);
-            sleep(400);
-            motorC.setPower(0.07);
-            while (true) {
-                if (motorC.getCurrentPosition() >= 450) {
-                    motorC.setPower(0.0);
-                    break;
-                }
-            }
-            sleep(400);
-            driveStraightGyro(150, 0.3);
-            sleep(400);
-            turnTankGyro(68, 0.5);
-            sleep(400);
-            driveStraightGyro(630, 0.6);
-            sleep(400);
-            while (true) {
-                motorA.setTargetPosition(-50);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
-        }
-
         if (shippingLevel == 2) {
-            turnTankGyro(3, 0.1);
-            driveStraightGyro(800, 0.6);
+            turnTankGyro(67.5, 0.3);
+            sleep(400);
+            driveStraightGyro(625, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(thirdLevel);
@@ -770,19 +849,20 @@ public class RedLeft_Autonomous extends LinearOpMode {
                     break;
                 }
             }
-            driveStraightGyro(200, 0.2);
+            driveStraightGyro(250, 0.2);
             sleep(300);
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-380, 0.5);
-            turnTankGyro(-32, 0.5);
-            driveStraightGyro(-1200, 0.7);
+            turnTankGyro(45, 0.5);
+            driveStraightGyro(-1350, 0.7);
             sleep(400);
-            driveStraightGyro(-280, 0.15);
+            turnTankGyro(-68, 0.4);
+            driveStraightGyro(-270, 0.3);
             sleep(400);
-            motorC.setPower(0.10);
+            motorC.setPower(-0.07);
             while (true) {
-                if (motorC.getCurrentPosition() >= 450) {
+                if (motorC.getCurrentPosition() <= -450) {
                     motorC.setPower(0.0);
                     break;
                 }
@@ -790,9 +870,9 @@ public class RedLeft_Autonomous extends LinearOpMode {
             sleep(400);
             driveStraightGyro(125, 0.3);
             sleep(400);
-            turnTankGyro(65, 0.5);
+            turnTankGyro(-10, 0.5);
             sleep(400);
-            driveStraightGyro(550, 0.6);
+            driveStraightGyro(600, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(-50);
@@ -815,76 +895,6 @@ public class RedLeft_Autonomous extends LinearOpMode {
                 motor2.getCurrentPosition(),
                 motor3.getCurrentPosition());
         telemetry.update();
-    }
-
-    class SamplePipeline extends OpenCvPipeline
-    {
-        boolean viewportPaused;
-
-        /*
-         * NOTE: if you wish to use additional Mat objects in your processing pipeline, it is
-         * highly recommended to declare them here as instance variables and re-use them for
-         * each invocation of processFrame(), rather than declaring them as new local variables
-         * each time through processFrame(). This removes the danger of causing a memory leak
-         * by forgetting to call mat.release(), and it also reduces memory pressure by not
-         * constantly allocating and freeing large chunks of memory.
-         */
-
-        @Override
-        public Mat processFrame(Mat input)
-        {
-            /*
-             * IMPORTANT NOTE: the input Mat that is passed in as a parameter to this method
-             * will only dereference to the same image for the duration of this particular
-             * invocation of this method. That is, if for some reason you'd like to save a copy
-             * of this particular frame for later use, you will need to either clone it or copy
-             * it to another Mat.
-             */
-
-            /*
-             * Draw a simple box around the middle 1/2 of the entire frame
-             */
-            Imgproc.rectangle(
-                    input,
-                    new Point(10, 10),
-                    new Point(70, 200),
-                    new Scalar(0, 255, 0), 4);
-
-            /**
-             * NOTE: to see how to get data from your pipeline to your OpMode as well as how
-             * to change which stage of the pipeline is rendered to the viewport when it is
-             * tapped, please see {@link PipelineStageSwitchingExample}
-             */
-
-            return input;
-        }
-
-        @Override
-        public void onViewportTapped()
-        {
-            /*
-             * The viewport (if one was specified in the constructor) can also be dynamically "paused"
-             * and "resumed". The primary use case of this is to reduce CPU, memory, and power load
-             * when you need your vision pipeline running, but do not require a live preview on the
-             * robot controller screen. For instance, this could be useful if you wish to see the live
-             * camera preview as you are initializing your robot, but you no longer require the live
-             * preview after you have finished your initialization process; pausing the viewport does
-             * not stop running your pipeline.
-             *
-             * Here we demonstrate dynamically pausing/resuming the viewport when the user taps it
-             */
-
-            viewportPaused = !viewportPaused;
-
-            if(viewportPaused)
-            {
-                webcam.pauseViewport();
-            }
-            else
-            {
-                webcam.resumeViewport();
-            }
-        }
     }
 
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains

@@ -70,9 +70,9 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="RedRight_Autonomous")
+@Autonomous(name="BlueLeft_Autonomous")
 // @Disabled
-public class RedRight_Autonomous extends LinearOpMode {
+public class BlueLeft extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -92,7 +92,7 @@ public class RedRight_Autonomous extends LinearOpMode {
     double armPower;
     int shippingLevel = 0;
     int firstLevel = 500;
-    int secondLevel = 850;
+    int secondLevel = 840;
     int thirdLevel = 1200;
 
 
@@ -364,10 +364,10 @@ public class RedRight_Autonomous extends LinearOpMode {
             List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
 
             if (updatedRecognitions == null) {
-                motor0.setPower(0.025);
-                motor1.setPower(-0.025);
+                motor0.setPower(0.02);
+                motor1.setPower(-0.01);
                 motor2.setPower(0.02);
-                motor3.setPower(-0.025);
+                motor3.setPower(-0.02);
 
                 if (getAngle() <= -10) {
                     motor0.setPower(0.02);
@@ -421,7 +421,7 @@ public class RedRight_Autonomous extends LinearOpMode {
                         motor3.setPower(0.0);
 
                         while (true) {
-                            if (getAngle() <= 0 && getAngle() >= -5) {
+                            if (getAngle() <= 0 && getAngle() > -10) {
                                 while (true) {
                                     motorA.setTargetPosition(firstLevel);
                                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -433,7 +433,7 @@ public class RedRight_Autonomous extends LinearOpMode {
                                 }
                             }
 
-                            if (getAngle() < -5 && getAngle() > -25) {
+                            if (getAngle() < -10 && getAngle() > -30) {
                                 shippingLevel = 1;
                                 while (true) {
                                     motorA.setTargetPosition(secondLevel);
@@ -446,7 +446,7 @@ public class RedRight_Autonomous extends LinearOpMode {
                                 }
                             }
 
-                            if (getAngle() < -25) {
+                            if (getAngle() < -30) {
                                 shippingLevel = 2;
                                 while (true) {
                                     motorA.setTargetPosition(thirdLevel);
@@ -610,8 +610,8 @@ public class RedRight_Autonomous extends LinearOpMode {
 
 
         if (shippingLevel == 0) {
-            turnTankGyro(25.5, 0.3);
-            driveStraightGyro(650, 0.6);
+            turnTankGyro(-21, 0.3);
+            driveStraightGyro(590, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(firstLevel);
@@ -622,13 +622,13 @@ public class RedRight_Autonomous extends LinearOpMode {
                     break;
                 }
             }
-            driveStraightGyro(250, 0.2);
+            driveStraightGyro(300, 0.2);
             sleep(300);
             servoA.setPosition(0.25);
             sleep(400);
-            driveStraightGyro(-250, 0.5);
+            driveStraightGyro(-270, 0.5);
             sleep(400);
-            turnTankGyro(56.5, 0.5);
+            turnTankGyro(-56.5, 0.5);
             driveStraightGyro(-2300, 0.7);
             while (true) {
                 motorA.setTargetPosition(-50);
@@ -642,8 +642,8 @@ public class RedRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 1) {
-            turnTankGyro(40, 0.3);
-            driveStraightGyro(550, 0.6);
+            turnTankGyro(-13, 0.3);
+            driveStraightGyro(570, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(secondLevel);
@@ -654,13 +654,13 @@ public class RedRight_Autonomous extends LinearOpMode {
                     break;
                 }
             }
-            driveStraightGyro(250, 0.2);
+            driveStraightGyro(300, 0.2);
             sleep(300);
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-250, 0.5);
             sleep(400);
-            turnTankGyro(58, 0.5);
+            turnTankGyro(-58, 0.5);
             driveStraightGyro(-2300, 0.7);
             while (true) {
                 motorA.setTargetPosition(-50);
@@ -674,8 +674,8 @@ public class RedRight_Autonomous extends LinearOpMode {
         }
 
         if (shippingLevel == 2) {
-            turnTankGyro(59, 0.3);
-            driveStraightGyro(600, 0.6);
+            turnTankGyro(5, 0.3);
+            driveStraightGyro(590, 0.6);
             sleep(400);
             while (true) {
                 motorA.setTargetPosition(thirdLevel);
@@ -686,13 +686,13 @@ public class RedRight_Autonomous extends LinearOpMode {
                     break;
                 }
             }
-            driveStraightGyro(250, 0.2);
+            driveStraightGyro(300, 0.2);
             sleep(300);
             servoA.setPosition(0.25);
             sleep(400);
             driveStraightGyro(-250, 0.5);
             sleep(400);
-            turnTankGyro(58, 0.5);
+            turnTankGyro(-58, 0.5);
             driveStraightGyro(-2300, 0.7);
             while (true) {
                 motorA.setTargetPosition(-50);

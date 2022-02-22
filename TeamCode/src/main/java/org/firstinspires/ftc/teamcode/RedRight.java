@@ -32,26 +32,19 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision;
+import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision2;
 import org.firstinspires.ftc.teamcode.Vision.dataFromOpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -61,9 +54,6 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.List;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -78,9 +68,9 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="RedLeft_Test")
+@Autonomous(name="RedRight")
 // @Disabled
-public class RedLeft_Test extends LinearOpMode {
+public class RedRight extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -100,7 +90,7 @@ public class RedLeft_Test extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 550;
+    int firstLevel = 600;
     int secondLevel = 1050;
     int thirdLevel = 1600;
 
@@ -109,7 +99,7 @@ public class RedLeft_Test extends LinearOpMode {
     TouchSensor touch;
     DistanceSensor distancion;
 
-    EasyOpenCVVision pipeline;
+    EasyOpenCVVision2 pipeline;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -396,7 +386,7 @@ public class RedLeft_Test extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        EasyOpenCVVision pipeline = new EasyOpenCVVision();
+        EasyOpenCVVision2 pipeline = new EasyOpenCVVision2();
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -477,20 +467,21 @@ public class RedLeft_Test extends LinearOpMode {
 
         {
             telemetry.clear();
-            telemetry.addData("Number of rings ", pipeline.position);
+            telemetry.addData("Shipping Element Position: ", pipeline.position);
             telemetry.addData("avg1", dataFromOpenCV.AVG1);
             telemetry.addData("avg2", dataFromOpenCV.AVG2);
+            telemetry.addData("avg3", dataFromOpenCV.AVG2);
             telemetry.update();
             //TODO
             //sleep(10000);
             int ShElementPosition = 10;
-            if ((pipeline.position == EasyOpenCVVision.ShipPosition.LEFT)) {
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.LEFT)) {
                 ShElementPosition = 1;
             }
-            if ((pipeline.position == EasyOpenCVVision.ShipPosition.CENTER)) {
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.CENTER)) {
                 ShElementPosition = 2;
             }
-            if ((pipeline.position == EasyOpenCVVision.ShipPosition.NONE)) {
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.NONE)) {
                 ShElementPosition = 3;
             }
             //Voltage regulation depending on the battery charge level
@@ -508,9 +499,10 @@ public class RedLeft_Test extends LinearOpMode {
             sleep(1000);
 
             if (ShElementPosition == 1 && check) {
-                turnTankGyro(-19, 0.5);
-                driveStraightGyro(580, 0.6);
+                turnTankGyro(33, 0.5);
                 sleep(500);
+                driveStraightGyro(755, 0.6);
+                sleep(400);
                 while (true) {
                     motorA.setTargetPosition(firstLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -522,32 +514,19 @@ public class RedLeft_Test extends LinearOpMode {
                 }
                 driveStraightGyro(200, 0.2);
                 sleep(400);
-                servoA.setPosition(0.25);
+                servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-500, 0.5);
-                turnTankGyro(-60, 0.5);
-                driveStraightGyro(-1300, 0.7);
+                driveStraightGyro(-475, 0.6);
                 sleep(400);
-                driveStraightGyro(-200, 0.15);
-                sleep(400);
-                motorC.setPower(0.09);
-                while (true) {
-                    if (motorC.getCurrentPosition() >= 450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(200, 0.3);
-                sleep(400);
-                turnTankGyro(80, 0.5);
-                sleep(400);
-                driveStraightGyro(750, 0.6);
-                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
+                turnTankGyro(-120, 0.5);
+                driveStraightGyro(1800, 0.8);
+                sleep(500);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
+                    motorA.setPower(0.7);
                     if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
                         motorA.setPower(0.0);
                         break;
@@ -556,9 +535,9 @@ public class RedLeft_Test extends LinearOpMode {
             }
 
             if (ShElementPosition == 2 && check) {
-                turnTankGyro(-19, 0.5);
-                driveStraightGyro(590, 0.6);
-                sleep(500);
+                turnTankGyro(30, 0.5);
+                driveStraightGyro(650, 0.6);
+                sleep(400);
                 while (true) {
                     motorA.setTargetPosition(secondLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -570,32 +549,18 @@ public class RedLeft_Test extends LinearOpMode {
                 }
                 driveStraightGyro(200, 0.2);
                 sleep(400);
-                servoA.setPosition(0.25);
+                servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-500, 0.5);
-                turnTankGyro(-60, 0.5);
-                driveStraightGyro(-1300, 0.7);
+                driveStraightGyro(-400, 0.6);
+                turnTankGyro(-127, 0.5);
+                driveStraightGyro(1800, 0.8);
                 sleep(400);
-                driveStraightGyro(-200, 0.15);
-                sleep(400);
-                motorC.setPower(0.09);
-                while (true) {
-                    if (motorC.getCurrentPosition() >= 450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(200, 0.3);
-                sleep(400);
-                turnTankGyro(80, 0.5);
-                sleep(400);
-                driveStraightGyro(750, 0.6);
-                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
+                    motorA.setPower(0.7);
                     if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
                         motorA.setPower(0.0);
                         break;
@@ -604,9 +569,9 @@ public class RedLeft_Test extends LinearOpMode {
             }
 
             if (ShElementPosition == 3 && check) {
-                turnTankGyro(-22.5, 0.5);
-                driveStraightGyro(600, 0.6);
-                sleep(500);
+                turnTankGyro(30, 0.5);
+                driveStraightGyro(680, 0.6);
+                sleep(400);
                 while (true) {
                     motorA.setTargetPosition(thirdLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -618,32 +583,18 @@ public class RedLeft_Test extends LinearOpMode {
                 }
                 driveStraightGyro(200, 0.2);
                 sleep(400);
-                servoA.setPosition(0.25);
+                servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-500, 0.5);
-                turnTankGyro(-55, 0.5);
-                driveStraightGyro(-1200, 0.7);
+                driveStraightGyro(-400, 0.6);
+                turnTankGyro(-127, 0.5);
+                driveStraightGyro(1800, 0.8);
                 sleep(400);
-                driveStraightGyro(-200, 0.15);
-                sleep(400);
-                motorC.setPower(0.09);
-                while (true) {
-                    if (motorC.getCurrentPosition() >= 450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(200, 0.3);
-                sleep(400);
-                turnTankGyro(80, 0.5);
-                sleep(400);
-                driveStraightGyro(750, 0.6);
-                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
+                    motorA.setPower(0.7);
                     if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
                         motorA.setPower(0.0);
                         break;

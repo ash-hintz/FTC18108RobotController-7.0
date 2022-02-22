@@ -15,7 +15,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 
-public class EasyOpenCVVision extends OpenCvPipeline {
+public class EasyOpenCVVision1 extends OpenCvPipeline {
     // This enum contains the possible number of rings
     public enum ShipPosition {
         LEFT,
