@@ -117,8 +117,8 @@ public class MoveInAllDirections extends LinearOpMode {
             // - This uses basic math to combine motions and is easier to drive straight.
             xAxis =  gamepad1.right_stick_x;
             yAxis =  gamepad1.right_stick_y;
-            leftWheelPower = 0.3 * Range.clip(xAxis, -1.0, 1.0) ;
-            rightWheelPower = 0.3 * Range.clip(yAxis, -1.0, 1.0) ;
+            leftWheelPower = 0.3 * Range.clip(xAxis, -0.7, 0.7) ;
+            rightWheelPower = 0.3 * Range.clip(yAxis, -0.7, 0.7) ;
             // Send calculated power to wheels
             if (rightWheelPower == 0 || leftWheelPower == 0) {
                 if (rightWheelPower == 0) {
