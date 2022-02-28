@@ -156,26 +156,15 @@ public class EasyOpenCVVision2 extends OpenCvPipeline {
         position = ShipPosition.NONE; // Record our analysis
 
 
-        if (avg1<145 & avg2<145 & avg3<145) {
+        if (avg1>125 & avg2>125 & avg3>125) {
             position = ShipPosition.NONE;
         }
-        else if (avg2>145 & avg1<145 & avg3<145) {
+        else if (avg2<125 & avg1>125 & avg3>125) {
             position = ShipPosition.LEFT;
         }
-        else if (avg3>145 & avg1<145 & avg2<145) {
+        else if (avg3<125 & avg1>125 & avg2>125) {
             position = ShipPosition.CENTER;
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

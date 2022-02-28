@@ -26,7 +26,6 @@ public class EasyOpenCVVision1 extends OpenCvPipeline {
     // Color constants
     static final Scalar RED = new Scalar(255, 0, 0);
     static final Scalar GREEN = new Scalar(0, 255, 0);
-    static final Scalar BLUE = new Scalar(0, 0, 255);
 
     // Constants for determining the existence of shipping element based on the RED content
     final int ONE_SHIP_THRESHOLD = 150;
@@ -156,13 +155,13 @@ public class EasyOpenCVVision1 extends OpenCvPipeline {
         position = ShipPosition.NONE; // Record our analysis
 
 
-        if (avg1>avg2&avg1>avg3) {
+        if (avg1<avg2&avg1<avg3) {
             position = ShipPosition.LEFT;
         }
-        if (avg2>avg1&avg2>avg3) {
+        if (avg2<avg1&avg2<avg3) {
             position = ShipPosition.CENTER;
         }
-        if (avg3>avg1&avg3>avg2) {
+        if (avg3<avg1&avg3<avg2) {
             position = ShipPosition.NONE;
         }
 

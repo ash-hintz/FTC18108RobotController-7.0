@@ -63,6 +63,9 @@ package org.firstinspires.ftc.teamcode;
         private DcMotor motor2 = null;
         private DcMotor motor3 = null;
         private DcMotor motorA = null;
+        private CRServo servoA = null;
+        private CRServo servoB = null;
+        private CRServo servoC = null;
         //private DcMotor motorC = null;
         //private Servo servoA;
         //private CRServo servoB;
@@ -113,14 +116,15 @@ package org.firstinspires.ftc.teamcode;
             motor3 = hardwareMap.get(DcMotor.class, "motor3");
             motorA = hardwareMap.get(DcMotor.class, "motorA");
             //motorC = hardwareMap.get(DcMotor.class, "motorC");
-            //servoA = hardwareMap.get(Servo.class, "servoA");
-            //servoB = hardwareMap.get(CRServo.class, "servoB");
+            servoA = hardwareMap.get(CRServo.class, "servoA");
+            servoB = hardwareMap.get(CRServo.class, "servoB");
+            servoC = hardwareMap.get(CRServo.class, "servoC");
 
             // Most robots need the motor on one side to be reversed to drive forward
             // Reverse the motor that runs backwards when connected directly to the battery
             motor0.setDirection(DcMotor.Direction.REVERSE);
-            motor1.setDirection(DcMotor.Direction.REVERSE);
-            motor2.setDirection(DcMotor.Direction.REVERSE);
+            motor1.setDirection(DcMotor.Direction.FORWARD);
+            motor2.setDirection(DcMotor.Direction.FORWARD);
             motor3.setDirection(DcMotor.Direction.FORWARD);
             motorA.setDirection(DcMotor.Direction.FORWARD);
             //motorC.setDirection(DcMotor.Direction.FORWARD);
@@ -158,31 +162,37 @@ package org.firstinspires.ftc.teamcode;
 
                 // POV Mode uses left stick to go forward, and right stick to turn.
                 // - This uses basic math to combine motions and is easier to drive straight.
-                double drive1 = gamepad1.left_stick_y;
-                double drive2 = gamepad1.left_stick_x;
-                double turn1 = -gamepad1.right_stick_x;
-                double turn2 = -gamepad1.right_stick_y;
-
+                double drive = gamepad1.left_stick_y;
+                double strafe = gamepad1.left_stick_x;
+                double turn = gamepad1.right_stick_x;
+                double v1;
+                double v2;
+                double v3;
+                double v4;
 
                 if (gamepad1.b) {
-                    leftPower = Range.clip(drive1 + drive2, -0.2, 0.2);
-                    rightPower = Range.clip(drive1 - drive2, -0.2, 0.2);
+                    v1 = Range.clip(drive - strafe - turn, -0.2, 0.2);
+                    v2 = Range.clip(drive + strafe + turn, -0.2, 0.2);
+                    v3 = Range.clip(-drive - strafe + turn, -0.2, 0.2);
+                    v4 = Range.clip(-drive + strafe - turn, -0.2, 0.2);
+
                 }
 
                 else {
-                    leftPower = Range.clip(drive1 + drive2, -0.7, 0.7);
-                    rightPower = Range.clip(drive1 - drive2, -0.7, 0.7);
+                    v1 = Range.clip(drive - strafe - turn, -0.8, 0.8);
+                    v2 = Range.clip(drive + strafe + turn, -0.8, 0.8);
+                    v3 = Range.clip(-drive - strafe + turn, -0.8, 0.8);
+                    v4 = Range.clip(-drive + strafe - turn, -0.8, 0.8);
                 }
 
-                // Send calculated power to wheels
-                motor0.setPower(rightPower);
-                motor1.setPower(-leftPower);
-                motor2.setPower(leftPower);
-                motor3.setPower(-rightPower);
+                motor0.setPower(v1);
+                motor1.setPower(v2);
+                motor2.setPower(v3);
+                motor3.setPower(v4);
 
                 // Set arm the right
                 double armJoyStick = -gamepad2.right_stick_y;
-                armPower = Range.clip(armJoyStick, -0.5, 0.5);
+                armPower = Range.clip(armJoyStick, -0.2, 0.2);
                 telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
                 if ((motorA.getCurrentPosition() <= armHeightMin) && (armPower >= 0)) {
@@ -227,8 +237,16 @@ package org.firstinspires.ftc.teamcode;
                     }
                 }
 
+
+                double armPosition = gamepad2.left_stick_y;
+                double armPos = Range.clip(armPosition, -1.0, 1.0);
+                servoA.setPower(armPos);
+
+
+
+
                 if (gamepad2.dpad_up) {
-                    //servoB.setPower(-1.0);
+                    //servoA.setPower(1.0);
                 }
 
                 if (gamepad2.dpad_down) {
@@ -242,7 +260,7 @@ package org.firstinspires.ftc.teamcode;
 
 
                 // Set the servo to the new position and pause;
-                //servoA.setPosition(Aposition);
+
                 sleep(CYCLE_MS);
                 idle();
 

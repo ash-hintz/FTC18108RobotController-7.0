@@ -34,28 +34,26 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.robot.Robot;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
+import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision2;
+import org.firstinspires.ftc.teamcode.Vision.dataFromOpenCV;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.List;
+import org.openftc.easyopencv.OpenCvPipeline;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -70,7 +68,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="BlueLeft_Autonomous")
+@Autonomous(name="BlueLeft  ")
 // @Disabled
 public class BlueLeft extends LinearOpMode {
 
@@ -87,15 +85,21 @@ public class BlueLeft extends LinearOpMode {
     private CRServo servoC = null;
     private CRServo servoD = null;
     private BNO055IMU imu;
+    private DistanceSensor ds1;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 500;
-    int secondLevel = 840;
-    int thirdLevel = 1200;
+    int firstLevel = 600;
+    int secondLevel = 1050;
+    int thirdLevel = 1600;
 
+    OpenCvCamera webcam;
 
+    TouchSensor touch;
+    DistanceSensor distancion;
+
+    EasyOpenCVVision2 pipeline;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -281,6 +285,12 @@ public class BlueLeft extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         resetAngle();
 
         if (motorDistance >= 0) {
@@ -357,144 +367,15 @@ public class BlueLeft extends LinearOpMode {
         }
     }
 
-    public void rightDetectDuckPos() {
-        while (true) {
-            // getUpdatedRecognitions() will return null if no new information is available since
-            // the last time that call was made.
-            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-
-            if (updatedRecognitions == null) {
-                motor0.setPower(0.02);
-                motor1.setPower(-0.01);
-                motor2.setPower(0.02);
-                motor3.setPower(-0.02);
-
-                if (getAngle() <= -10) {
-                    motor0.setPower(0.02);
-                    motor1.setPower(-0.02);
-                    motor2.setPower(0.02);
-                    motor3.setPower(-0.02);
-                }
-                else if (getAngle() <= -30) {
-                    motor0.setPower(0.01);
-                    motor1.setPower(-0.01);
-                    motor2.setPower(0.01);
-                    motor3.setPower(-0.01);
-                }
-            }
-
-            if (updatedRecognitions != null) {
-                    /* motor0.setPower(0.0);
-                    motor1.setPower(0.0);
-                    motor2.setPower(0.0);
-                    motor3.setPower(0.0);
-                    */
-                motorA.setTargetPosition(0);
-
-                telemetry.addData("# Object Detected", updatedRecognitions.size());
-                telemetry.update();
-                // step through the list of recognitions and display boundary info.
-                int i = 0;
-                for (Recognition recognition : updatedRecognitions) {
-
-                    telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                    telemetry.addData(String.format("  Left (%d)", i), "%.03f",
-                            recognition.getLeft());
-                    telemetry.addData(String.format("  Right (%d)", i), "%.03f",
-                            recognition.getRight());
-
-                    i++;
-
-                    if (recognition.getLabel() != "Duck") {
-                        /*
-                        motor0.setPower(0.1);
-                        motor1.setPower(-0.1);
-                        motor2.setPower(0.1);
-                        motor3.setPower(-0.1);
-                        */
-                    }
-
-                    else if (recognition.getLabel() == ("Duck")) {
-                        motor0.setPower(0.0);
-                        motor1.setPower(0.0);
-                        motor2.setPower(0.0);
-                        motor3.setPower(0.0);
-
-                        while (true) {
-                            if (getAngle() <= 0 && getAngle() > -10) {
-                                while (true) {
-                                    motorA.setTargetPosition(firstLevel);
-                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    motorA.setPower(0.4);
-                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                                        motorA.setPower(0.0);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (getAngle() < -10 && getAngle() > -30) {
-                                shippingLevel = 1;
-                                while (true) {
-                                    motorA.setTargetPosition(secondLevel);
-                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    motorA.setPower(0.4);
-                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                                        motorA.setPower(0.0);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (getAngle() < -30) {
-                                shippingLevel = 2;
-                                while (true) {
-                                    motorA.setTargetPosition(thirdLevel);
-                                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                                    motorA.setPower(0.4);
-                                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                                        motorA.setPower(0.0);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                                motorA.setPower(0.0);
-                                break;
-                            }
-                        }
-                    }
-
-                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                        break;
-                    }
-                }
-            }
-
-            if  (shippingLevel == 0 && motorA.getCurrentPosition() >= firstLevel) {
-                break;
-            }
-            if  (shippingLevel == 1 && motorA.getCurrentPosition() >= secondLevel) {
-                break;
-            }
-            if  (shippingLevel == 2 && motorA.getCurrentPosition() >= thirdLevel) {
-                break;
-            }
-
-        }
-    }
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-
         //  Setup IMU configurations
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.loggingEnabled = false;
         parameters.loggingTag = "IMU";
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+        ds1 = hardwareMap.get(DistanceSensor.class, "ds1");
         telemetry.addData("Mode", "IMU calibrating...");
         telemetry.update();
 
@@ -502,44 +383,27 @@ public class BlueLeft extends LinearOpMode {
         int endPos = 0;
 
 
-        /* int cameraMonitorViewID = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        OpenCvWebcam webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewID);
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
+
+        EasyOpenCVVision2 pipeline = new EasyOpenCVVision2();
+        webcam.setPipeline(pipeline);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
-                webcam.startStreaming(320,240, OpenCvCameraRotation.UPRIGHT);
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
-            public void onError(int errorCode)
-            {
-                RobotLog.vv("OpenCV error code", String.valueOf(errorCode));
+            public void onError(int errorCode) {
+
             }
-        }); */
-
-
-        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-        // first.
-        initVuforia();
-        initTfod();
-
+        });
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
          * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
          **/
-        if (tfod != null) {
-            tfod.activate();
-            // The TensorFlow software will scale the input images from the camera to a lower resolution.
-            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
-            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-            // should be set to the value of the images used to create the TensorFlow Object Detection model
-            // (typically 16/9).
-            tfod.setZoom(2.5, 16.0 / 9.0);
-        }
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
@@ -557,12 +421,13 @@ public class BlueLeft extends LinearOpMode {
         servoD = hardwareMap.get(CRServo.class, "servoD");
 
 
+
         // Setup DC Motor configurations
         // Most robots need the motor on one side to be reversed to drive forward
-        motor0.setDirection(DcMotor.Direction.FORWARD);
-        motor1.setDirection(DcMotor.Direction.REVERSE);
-        motor2.setDirection(DcMotor.Direction.FORWARD);
-        motor3.setDirection(DcMotor.Direction.REVERSE);
+        motor0.setDirection(DcMotor.Direction.REVERSE);
+        motor1.setDirection(DcMotor.Direction.FORWARD);
+        motor2.setDirection(DcMotor.Direction.REVERSE);
+        motor3.setDirection(DcMotor.Direction.FORWARD);
         motorA.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
@@ -600,112 +465,158 @@ public class BlueLeft extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        // START AUTONOMOUS PROGRAM
+        {
+            telemetry.clear();
+            telemetry.addData("Shipping Element Position: ", pipeline.position);
+            telemetry.addData("avg1", dataFromOpenCV.AVG1);
+            telemetry.addData("avg2", dataFromOpenCV.AVG2);
+            telemetry.addData("avg3", dataFromOpenCV.AVG2);
+            telemetry.update();
+            //TODO
+            //sleep(10000);
+            int ShElementPosition = 10;
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.LEFT)) {
+                ShElementPosition = 1;
+            }
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.CENTER)) {
+                ShElementPosition = 2;
+            }
+            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.NONE)) {
+                ShElementPosition = 3;
+            }
+            //Voltage regulation depending on the battery charge level
+            telemetry.addData("ShElementPosition", ShElementPosition);
+            telemetry.update();
+            boolean check = true;
 
-        servoA.setPosition(0.10);
-        sleep(1250);
-        driveStraightGyro(150, 0.3);
-        sleep(1000);
-        rightDetectDuckPos();
+            //lifttime.reset();
 
+            // START AUTONOMOUS PROGRAM
 
-        if (shippingLevel == 0) {
-            turnTankGyro(-21, 0.3);
-            driveStraightGyro(590, 0.6);
-            sleep(400);
-            while (true) {
-                motorA.setTargetPosition(firstLevel);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
+            servoA.setPosition(0.10);
+            sleep(1250);
+            driveStraightGyro(200, 0.3);
+            sleep(1000);
+
+            if (ShElementPosition == 1 && check) {
+                turnTankGyro(33, 0.5);
+                sleep(500);
+                driveStraightGyro(755, 0.6);
+                sleep(400);
+                while (true) {
+                    motorA.setTargetPosition(firstLevel);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.4);
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
+                }
+                driveStraightGyro(200, 0.2);
+                sleep(400);
+                servoA.setPosition(0.35);
+                sleep(400);
+                driveStraightGyro(-475, 0.6);
+                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
+                turnTankGyro(-120, 0.5);
+                driveStraightGyro(1800, 0.8);
+                sleep(500);
+                while (true) {
+                    motorA.setTargetPosition(-50);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.7);
+                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
                 }
             }
-            driveStraightGyro(300, 0.2);
-            sleep(300);
-            servoA.setPosition(0.25);
-            sleep(400);
-            driveStraightGyro(-270, 0.5);
-            sleep(400);
-            turnTankGyro(-56.5, 0.5);
-            driveStraightGyro(-2300, 0.7);
-            while (true) {
-                motorA.setTargetPosition(-50);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
+
+            if (ShElementPosition == 2 && check) {
+                turnTankGyro(30, 0.5);
+                driveStraightGyro(650, 0.6);
+                sleep(400);
+                while (true) {
+                    motorA.setTargetPosition(secondLevel);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.4);
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
+                }
+                driveStraightGyro(200, 0.2);
+                sleep(400);
+                servoA.setPosition(0.35);
+                sleep(400);
+                driveStraightGyro(-400, 0.6);
+                turnTankGyro(-127, 0.5);
+                driveStraightGyro(1800, 0.8);
+                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
+                while (true) {
+                    motorA.setTargetPosition(-50);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.7);
+                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
                 }
             }
+
+            if (ShElementPosition == 3 && check) {
+                turnTankGyro(30, 0.5);
+                driveStraightGyro(680, 0.6);
+                sleep(400);
+                while (true) {
+                    motorA.setTargetPosition(thirdLevel);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.4);
+                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
+                }
+                driveStraightGyro(200, 0.2);
+                sleep(400);
+                servoA.setPosition(0.35);
+                sleep(400);
+                driveStraightGyro(-400, 0.6);
+                turnTankGyro(-127, 0.5);
+                driveStraightGyro(1800, 0.8);
+                sleep(400);
+                servoA.setPosition(0.10);
+                sleep(500);
+                while (true) {
+                    motorA.setTargetPosition(-50);
+                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorA.setPower(0.7);
+                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
+                        motorA.setPower(0.0);
+                        break;
+                    }
+                }
+            }
+
+            // END AUTONOMOUS PROGRAM
         }
 
-        if (shippingLevel == 1) {
-            turnTankGyro(-13, 0.3);
-            driveStraightGyro(570, 0.6);
-            sleep(400);
-            while (true) {
-                motorA.setTargetPosition(secondLevel);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
-            driveStraightGyro(300, 0.2);
-            sleep(300);
-            servoA.setPosition(0.25);
-            sleep(400);
-            driveStraightGyro(-250, 0.5);
-            sleep(400);
-            turnTankGyro(-58, 0.5);
-            driveStraightGyro(-2300, 0.7);
-            while (true) {
-                motorA.setTargetPosition(-50);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
+        while (opModeIsActive()) {
+            telemetry.addData("Duck Position: ", pipeline.position);
+            telemetry.addData("avg1", dataFromOpenCV.AVG1);
+            telemetry.addData("avg2", dataFromOpenCV.AVG2);
+            telemetry.addData("avg3", dataFromOpenCV.AVG3);
+            telemetry.update();
         }
 
-        if (shippingLevel == 2) {
-            turnTankGyro(5, 0.3);
-            driveStraightGyro(590, 0.6);
-            sleep(400);
-            while (true) {
-                motorA.setTargetPosition(thirdLevel);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
-            driveStraightGyro(300, 0.2);
-            sleep(300);
-            servoA.setPosition(0.25);
-            sleep(400);
-            driveStraightGyro(-250, 0.5);
-            sleep(400);
-            turnTankGyro(-58, 0.5);
-            driveStraightGyro(-2300, 0.7);
-            while (true) {
-                motorA.setTargetPosition(-50);
-                motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                motorA.setPower(0.4);
-                if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                    motorA.setPower(0.0);
-                    break;
-                }
-            }
-        }
 
-        // END AUTONOMOUS PROGRAM
+
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
 
         // Send telemetry message to indicate successful Encoder reset
         // telemetry.setAutoClear(false);
@@ -715,6 +626,76 @@ public class BlueLeft extends LinearOpMode {
                 motor2.getCurrentPosition(),
                 motor3.getCurrentPosition());
         telemetry.update();
+    }
+
+    class SamplePipeline extends OpenCvPipeline
+    {
+        boolean viewportPaused;
+
+        /*
+         * NOTE: if you wish to use additional Mat objects in your processing pipeline, it is
+         * highly recommended to declare them here as instance variables and re-use them for
+         * each invocation of processFrame(), rather than declaring them as new local variables
+         * each time through processFrame(). This removes the danger of causing a memory leak
+         * by forgetting to call mat.release(), and it also reduces memory pressure by not
+         * constantly allocating and freeing large chunks of memory.
+         */
+
+        @Override
+        public Mat processFrame(Mat input)
+        {
+            /*
+             * IMPORTANT NOTE: the input Mat that is passed in as a parameter to this method
+             * will only dereference to the same image for the duration of this particular
+             * invocation of this method. That is, if for some reason you'd like to save a copy
+             * of this particular frame for later use, you will need to either clone it or copy
+             * it to another Mat.
+             */
+
+            /*
+             * Draw a simple box around the middle 1/2 of the entire frame
+             */
+            Imgproc.rectangle(
+                    input,
+                    new Point(10, 10),
+                    new Point(70, 200),
+                    new Scalar(0, 255, 0), 4);
+
+            /**
+             * NOTE: to see how to get data from your pipeline to your OpMode as well as how
+             * to change which stage of the pipeline is rendered to the viewport when it is
+             * tapped, please see {@link PipelineStageSwitchingExample}
+             */
+
+            return input;
+        }
+
+        @Override
+        public void onViewportTapped()
+        {
+            /*
+             * The viewport (if one was specified in the constructor) can also be dynamically "paused"
+             * and "resumed". The primary use case of this is to reduce CPU, memory, and power load
+             * when you need your vision pipeline running, but do not require a live preview on the
+             * robot controller screen. For instance, this could be useful if you wish to see the live
+             * camera preview as you are initializing your robot, but you no longer require the live
+             * preview after you have finished your initialization process; pausing the viewport does
+             * not stop running your pipeline.
+             *
+             * Here we demonstrate dynamically pausing/resuming the viewport when the user taps it
+             */
+
+            viewportPaused = !viewportPaused;
+
+            if(viewportPaused)
+            {
+                webcam.pauseViewport();
+            }
+            else
+            {
+                webcam.resumeViewport();
+            }
+        }
     }
 
     /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
@@ -756,43 +737,6 @@ public class BlueLeft extends LinearOpMode {
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    private VuforiaLocalizer vuforia;
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod;
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "webcam");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 320;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-    }
 }
+
+

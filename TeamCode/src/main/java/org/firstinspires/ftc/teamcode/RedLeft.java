@@ -418,7 +418,7 @@ public class RedLeft extends LinearOpMode {
         servoA = hardwareMap.get(Servo.class, "servoA");
         servoB = hardwareMap.get(CRServo.class, "servoB");
         servoC = hardwareMap.get(CRServo.class, "servoC");
-        servoD = hardwareMap.get(CRServo.class, "servoD");
+
 
 
 

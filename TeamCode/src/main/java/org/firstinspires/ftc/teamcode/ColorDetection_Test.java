@@ -68,9 +68,9 @@ import org.openftc.easyopencv.OpenCvPipeline;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="BlueRight")
+@Autonomous(name="ColorTest")
 // @Disabled
-public class BlueRight extends LinearOpMode {
+public class ColorDetection_Test extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -96,6 +96,7 @@ public class BlueRight extends LinearOpMode {
 
     OpenCvCamera webcam;
 
+    TouchSensor touch;
     DistanceSensor distancion;
 
     EasyOpenCVVision1 pipeline;
@@ -491,167 +492,12 @@ public class BlueRight extends LinearOpMode {
 
             // START AUTONOMOUS PROGRAM
 
-            servoA.setPosition(0.10);
-            sleep(1250);
-            driveStraightGyro(200, 0.3);
-            sleep(1000);
-
-            if (ShElementPosition == 1 && check) {
-                turnTankGyro(49, 0.3);
-                sleep(500);
-                driveStraightGyro(725, 0.6);
-                sleep(500);
-                turnTankGyro(-10, 0.15);
-                sleep(400);
-                while (true) {
-                    motorA.setTargetPosition(firstLevel);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
-                driveStraightGyro(250, 0.2);
-                sleep(300);
-                servoA.setPosition(0.25);
-                sleep(400);
-                driveStraightGyro(-380, 0.5);
-                turnTankGyro(45, 0.5);
-                driveStraightGyro(-1280, 0.7);
-                sleep(400);
-                turnTankGyro(-75, 0.4);
-                driveStraightGyro(-550, 0.3);
-                sleep(400);
-                motorC.setPower(-0.06);
-                while (true) {
-                    if (motorC.getCurrentPosition() <= -450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(125, 0.3);
-                sleep(400);
-                turnTankGyro(-10, 0.5);
-                sleep(400);
-                driveStraightGyro(600, 0.6);
-                sleep(400);
-                servoA.setPosition(0.10);
-                sleep(750);
-                while (true) {
-                    motorA.setTargetPosition(-50);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
-            }
-
-            if (ShElementPosition == 2 && check) {
-                turnTankGyro(39, 0.3);
-                sleep(500);
-                driveStraightGyro(725, 0.6);
-                sleep(500);
-                while (true) {
-                    motorA.setTargetPosition(secondLevel);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
-                driveStraightGyro(265, 0.2);
-                sleep(300);
-                servoA.setPosition(0.25);
-                sleep(400);
-                driveStraightGyro(-380, 0.5);
-                turnTankGyro(45, 0.5);
-                driveStraightGyro(-1230, 0.7);
-                sleep(400);
-                turnTankGyro(-75, 0.4);
-                driveStraightGyro(-550, 0.3);
-                sleep(400);
-                motorC.setPower(-0.06);
-                while (true) {
-                    if (motorC.getCurrentPosition() <= -450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(125, 0.3);
-                sleep(400);
-                turnTankGyro(-10, 0.5);
-                sleep(400);
-                driveStraightGyro(600, 0.6);
-                sleep(400);
-                servoA.setPosition(0.10);
-                sleep(750);
-                while (true) {
-                    motorA.setTargetPosition(-50);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
-            }
-
-            if (ShElementPosition == 3 & check) {
-                turnTankGyro(39, 0.3);
-                sleep(500);
-                driveStraightGyro(765, 0.6);
-                sleep(400);
-                while (true) {
-                    motorA.setTargetPosition(thirdLevel);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
-                driveStraightGyro(310, 0.2);
-                sleep(300);
-                servoA.setPosition(0.25);
-                sleep(400);
-                driveStraightGyro(-380, 0.5);
-                turnTankGyro(45, 0.5);
-                driveStraightGyro(-1280, 0.7);
-                sleep(400);
-                turnTankGyro(-78, 0.4);
-                driveStraightGyro(-550, 0.3);
-                sleep(400);
-                motorC.setPower(-0.06);
-                while (true) {
-                    if (motorC.getCurrentPosition() <= -450) {
-                        motorC.setPower(0.0);
-                        break;
-                    }
-                }
-                sleep(400);
-                driveStraightGyro(125, 0.3);
-                sleep(400);
-                turnTankGyro(-7, 0.5);
-                sleep(400);
-                driveStraightGyro(600, 0.6);
-                sleep(400);
-                servoA.setPosition(0.10);
-                sleep(750);
-                while (true) {
-                    motorA.setTargetPosition(-50);
-                    motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
-                    if (motorA.getCurrentPosition() <= motorA.getTargetPosition()) {
-                        motorA.setPower(0.0);
-                        break;
-                    }
-                }
+            while (opModeIsActive()) {
+                telemetry.addData("Duck Position: ", pipeline.position);
+                telemetry.addData("avg1", dataFromOpenCV.AVG1);
+                telemetry.addData("avg2", dataFromOpenCV.AVG2);
+                telemetry.addData("avg3", dataFromOpenCV.AVG3);
+                telemetry.update();
             }
 
             // END AUTONOMOUS PROGRAM
