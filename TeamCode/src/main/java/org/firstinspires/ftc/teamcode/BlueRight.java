@@ -523,7 +523,7 @@ public class BlueRight extends LinearOpMode {
                 turnTankGyro(-75, 0.4);
                 driveStraightGyro(-550, 0.3);
                 sleep(400);
-                motorC.setPower(-0.06);
+                motorC.setPower(-0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() <= -450) {
                         motorC.setPower(0.0);
@@ -575,7 +575,7 @@ public class BlueRight extends LinearOpMode {
                 turnTankGyro(-75, 0.4);
                 driveStraightGyro(-550, 0.3);
                 sleep(400);
-                motorC.setPower(-0.06);
+                motorC.setPower(-0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() <= -450) {
                         motorC.setPower(0.0);
@@ -627,7 +627,7 @@ public class BlueRight extends LinearOpMode {
                 turnTankGyro(-78, 0.4);
                 driveStraightGyro(-550, 0.3);
                 sleep(400);
-                motorC.setPower(-0.06);
+                motorC.setPower(-0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() <= -450) {
                         motorC.setPower(0.0);

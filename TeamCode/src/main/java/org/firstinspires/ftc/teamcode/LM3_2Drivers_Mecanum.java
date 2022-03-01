@@ -63,6 +63,7 @@ package org.firstinspires.ftc.teamcode;
         private DcMotor motor2 = null;
         private DcMotor motor3 = null;
         private DcMotor motorA = null;
+        private DcMotor motorC = null;
         private CRServo servoA = null;
         private CRServo servoB = null;
         private CRServo servoC = null;
@@ -94,7 +95,7 @@ package org.firstinspires.ftc.teamcode;
         double armPower;
         double armHeightMin = -10;
         double armHeightMax = 1800;
-        double carouselPower = 0.12;
+        double carouselPower = 0.6;
 
         // Local variable to control Arm / Carousel / Class
         boolean armIsMoving = false;
@@ -115,7 +116,7 @@ package org.firstinspires.ftc.teamcode;
             motor2 = hardwareMap.get(DcMotor.class, "motor2");
             motor3 = hardwareMap.get(DcMotor.class, "motor3");
             motorA = hardwareMap.get(DcMotor.class, "motorA");
-            //motorC = hardwareMap.get(DcMotor.class, "motorC");
+            motorC = hardwareMap.get(DcMotor.class, "motorC");
             servoA = hardwareMap.get(CRServo.class, "servoA");
             servoB = hardwareMap.get(CRServo.class, "servoB");
             servoC = hardwareMap.get(CRServo.class, "servoC");
@@ -192,7 +193,7 @@ package org.firstinspires.ftc.teamcode;
 
                 // Set arm the right
                 double armJoyStick = -gamepad2.right_stick_y;
-                armPower = Range.clip(armJoyStick, -0.2, 0.2);
+                armPower = Range.clip(armJoyStick, -0.08, 0.08);
                 telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
                 if ((motorA.getCurrentPosition() <= armHeightMin) && (armPower >= 0)) {
@@ -208,40 +209,24 @@ package org.firstinspires.ftc.teamcode;
                 // Turn the Red Carousel On / Off
 
                 if (gamepad2.b)
-                    //motorC.setPower(carouselPower);
+                    motorC.setPower(carouselPower);
                 if (gamepad2.x)
-                    //motorC.setPower(0.0);
+                    motorC.setPower(0.0);
 
                 // Turn the Blue Carousel On / Off
                 if (gamepad2.y)
-                    //motorC.setPower(-1*carouselPower);
+                    motorC.setPower(-1*carouselPower);
                 if (gamepad2.a)
-                    //motorC.setPower(0.0);
-
-                // Slew the servo, according to the rampUp (direction) variable.
-
-                if (gamepad2.left_bumper) {
-
-                    // Keep stepping up until we hit the max value.
-                    Aposition += INCREMENT;
-                    if (Aposition >= AMAX_POS ) {
-                        Aposition = AMAX_POS;
-                    }
-                }
-
-                if (gamepad2.right_bumper) {
-                    // Keep stepping down until we hit the min value.
-                    Aposition -= INCREMENT ;
-                    if (Aposition <= AMIN_POS) {
-                        Aposition = AMIN_POS;
-                    }
-                }
+                    motorC.setPower(0.0);
 
 
                 double armPosition = gamepad2.left_stick_y;
                 double armPos = Range.clip(armPosition, -1.0, 1.0);
-                servoA.setPower(armPos);
+                servoB.setPower(armPos);
 
+                double clawPosition = gamepad2.left_stick_x;
+                double clawPos = Range.clip(clawPosition, -1.0, 1.0);
+                servoC.setPower(clawPos);
 
 
 

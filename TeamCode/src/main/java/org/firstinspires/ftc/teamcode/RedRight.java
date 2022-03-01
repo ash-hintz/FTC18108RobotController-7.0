@@ -501,7 +501,7 @@ public class RedRight extends LinearOpMode {
             if (ShElementPosition == 1 && check) {
                 turnTankGyro(33, 0.5);
                 sleep(500);
-                driveStraightGyro(755, 0.6);
+                driveStraightGyro(780, 0.6);
                 sleep(400);
                 while (true) {
                     motorA.setTargetPosition(firstLevel);
@@ -516,7 +516,7 @@ public class RedRight extends LinearOpMode {
                 sleep(400);
                 servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-475, 0.6);
+                driveStraightGyro(-555, 0.6);
                 sleep(400);
                 servoA.setPosition(0.10);
                 sleep(500);
@@ -536,7 +536,7 @@ public class RedRight extends LinearOpMode {
 
             if (ShElementPosition == 2 && check) {
                 turnTankGyro(30, 0.5);
-                driveStraightGyro(650, 0.6);
+                driveStraightGyro(725, 0.6);
                 sleep(400);
                 while (true) {
                     motorA.setTargetPosition(secondLevel);
@@ -551,7 +551,7 @@ public class RedRight extends LinearOpMode {
                 sleep(400);
                 servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-400, 0.6);
+                driveStraightGyro(-550, 0.6);
                 turnTankGyro(-127, 0.5);
                 driveStraightGyro(1800, 0.8);
                 sleep(400);
@@ -570,7 +570,7 @@ public class RedRight extends LinearOpMode {
 
             if (ShElementPosition == 3 && check) {
                 turnTankGyro(30, 0.5);
-                driveStraightGyro(680, 0.6);
+                driveStraightGyro(745, 0.6);
                 sleep(400);
                 while (true) {
                     motorA.setTargetPosition(thirdLevel);
@@ -585,7 +585,7 @@ public class RedRight extends LinearOpMode {
                 sleep(400);
                 servoA.setPosition(0.35);
                 sleep(400);
-                driveStraightGyro(-400, 0.6);
+                driveStraightGyro(-570, 0.6);
                 turnTankGyro(-127, 0.5);
                 driveStraightGyro(1800, 0.8);
                 sleep(400);

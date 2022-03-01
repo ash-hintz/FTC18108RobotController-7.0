@@ -520,7 +520,7 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);
-                motorC.setPower(0.09);
+                motorC.setPower(0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() >= 450) {
                         motorC.setPower(0.0);
@@ -570,7 +570,7 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);
-                motorC.setPower(0.09);
+                motorC.setPower(0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() >= 450) {
                         motorC.setPower(0.0);
@@ -620,7 +620,7 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);
-                motorC.setPower(0.09);
+                motorC.setPower(0.07);
                 while (true) {
                     if (motorC.getCurrentPosition() >= 450) {
                         motorC.setPower(0.0);

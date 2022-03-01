@@ -5,18 +5,16 @@ This program was written by the FTC KTM #12529 team at the Polytechnic Universit
 
 package org.firstinspires.ftc.teamcode.Vision;
 
-import org.firstinspires.ftc.teamcode.Vision.dataFromOpenCV;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
+import org.firstinspires.ftc.teamcode.Vision.GripPipeline;
 
 
-
-public class EasyOpenCVVision1 extends OpenCvPipeline {
+public class EasyOpenCVVisionTest extends GripPipeline {
     // This enum contains the possible number of rings
     public enum ShipPosition {
         LEFT,
@@ -112,7 +110,6 @@ public class EasyOpenCVVision1 extends OpenCvPipeline {
         Core.extractChannel(YCrCb, Cb, 1);
     }
 
-    @Override
     public void init(Mat firstFrame) {
         inputToCb(firstFrame);
         region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
@@ -121,7 +118,6 @@ public class EasyOpenCVVision1 extends OpenCvPipeline {
 
     }
 
-    @Override
     public Mat processFrame(Mat input) {
         inputToCb(input);
 

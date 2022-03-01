@@ -90,8 +90,8 @@ public class LM3_2Drivers extends LinearOpMode {
     double rightPower;
     double armPower;
     double armHeightMin = -10;
-    double armHeightMax = 1800;
-    double carouselPower = 0.12;
+    double armHeightMax = 2000;
+    double carouselPower = 0.09;
 
     // Local variable to control Arm / Carousel / Class
     boolean armIsMoving = false;
@@ -167,8 +167,8 @@ public class LM3_2Drivers extends LinearOpMode {
             }
 
             else {
-                leftPower = Range.clip(drive + turn, -0.85, 0.85);
-                rightPower = Range.clip(drive - turn, -0.85, 0.85);
+                leftPower = Range.clip(drive + turn, -0.75, 0.75);
+                rightPower = Range.clip(drive - turn, -0.75, 0.75);
             }
 
             // Send calculated power to wheels
@@ -179,7 +179,7 @@ public class LM3_2Drivers extends LinearOpMode {
 
             // Set arm the right
             double armJoyStick = -gamepad2.right_stick_y;
-            armPower = Range.clip(armJoyStick, -0.5, 0.5);
+            armPower = Range.clip(armJoyStick, -0.75, 0.75);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
 
             if ((motorA.getCurrentPosition() <= armHeightMin) && (armPower >= 0)) {

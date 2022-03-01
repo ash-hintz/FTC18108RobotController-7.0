@@ -45,6 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision1;
+import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVisionTest;
 import org.firstinspires.ftc.teamcode.Vision.dataFromOpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -53,7 +54,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
+import org.firstinspires.ftc.teamcode.Vision.GripPipeline;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -99,7 +100,7 @@ public class ColorDetection_Test extends LinearOpMode {
     TouchSensor touch;
     DistanceSensor distancion;
 
-    EasyOpenCVVision1 pipeline;
+    EasyOpenCVVisionTest pipeline;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -386,8 +387,8 @@ public class ColorDetection_Test extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        EasyOpenCVVision1 pipeline = new EasyOpenCVVision1();
-        webcam.setPipeline(pipeline);
+        EasyOpenCVVisionTest pipeline = new EasyOpenCVVisionTest();
+        //webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -474,13 +475,13 @@ public class ColorDetection_Test extends LinearOpMode {
             //TODO
             //sleep(10000);
             int ShElementPosition = 10;
-            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.LEFT)) {
+            if ((pipeline.position == EasyOpenCVVisionTest.ShipPosition.LEFT)) {
                 ShElementPosition = 1;
             }
-            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.CENTER)) {
+            if ((pipeline.position == EasyOpenCVVisionTest.ShipPosition.CENTER)) {
                 ShElementPosition = 2;
             }
-            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.NONE)) {
+            if ((pipeline.position == EasyOpenCVVisionTest.ShipPosition.NONE)) {
                 ShElementPosition = 3;
             }
             //Voltage regulation depending on the battery charge level
@@ -526,7 +527,7 @@ public class ColorDetection_Test extends LinearOpMode {
         telemetry.update();
     }
 
-    class SamplePipeline extends OpenCvPipeline
+    class SamplePipeline extends GripPipeline
     {
         boolean viewportPaused;
 
@@ -539,7 +540,7 @@ public class ColorDetection_Test extends LinearOpMode {
          * constantly allocating and freeing large chunks of memory.
          */
 
-        @Override
+        //@Override
         public Mat processFrame(Mat input)
         {
             /*
@@ -568,7 +569,7 @@ public class ColorDetection_Test extends LinearOpMode {
             return input;
         }
 
-        @Override
+        //@Override
         public void onViewportTapped()
         {
             /*
