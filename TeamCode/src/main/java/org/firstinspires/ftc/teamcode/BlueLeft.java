@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision2;
+import org.firstinspires.ftc.teamcode.Vision.EasyOpenCVVision1;
 import org.firstinspires.ftc.teamcode.Vision.dataFromOpenCV;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -68,7 +68,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="BlueLeft  ")
+@Autonomous(name="BlueLeft")
 // @Disabled
 public class BlueLeft extends LinearOpMode {
 
@@ -90,7 +90,7 @@ public class BlueLeft extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 600;
+    int firstLevel = 550;
     int secondLevel = 1050;
     int thirdLevel = 1600;
 
@@ -99,7 +99,7 @@ public class BlueLeft extends LinearOpMode {
     TouchSensor touch;
     DistanceSensor distancion;
 
-    EasyOpenCVVision2 pipeline;
+    EasyOpenCVVision1 pipeline;
 
     private void resetAngle() {
         lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
@@ -386,7 +386,7 @@ public class BlueLeft extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), cameraMonitorViewId);
 
-        EasyOpenCVVision2 pipeline = new EasyOpenCVVision2();
+        EasyOpenCVVision1 pipeline = new EasyOpenCVVision1();
         webcam.setPipeline(pipeline);
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -418,7 +418,7 @@ public class BlueLeft extends LinearOpMode {
         servoA = hardwareMap.get(Servo.class, "servoA");
         servoB = hardwareMap.get(CRServo.class, "servoB");
         servoC = hardwareMap.get(CRServo.class, "servoC");
-        servoD = hardwareMap.get(CRServo.class, "servoD");
+
 
 
 
@@ -467,21 +467,20 @@ public class BlueLeft extends LinearOpMode {
 
         {
             telemetry.clear();
-            telemetry.addData("Shipping Element Position: ", pipeline.position);
+            telemetry.addData("Number of rings ", pipeline.position);
             telemetry.addData("avg1", dataFromOpenCV.AVG1);
             telemetry.addData("avg2", dataFromOpenCV.AVG2);
-            telemetry.addData("avg3", dataFromOpenCV.AVG2);
             telemetry.update();
             //TODO
             //sleep(10000);
             int ShElementPosition = 10;
-            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.LEFT)) {
+            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.LEFT)) {
                 ShElementPosition = 1;
             }
-            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.CENTER)) {
+            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.CENTER)) {
                 ShElementPosition = 2;
             }
-            if ((pipeline.position == EasyOpenCVVision2.ShipPosition.NONE)) {
+            if ((pipeline.position == EasyOpenCVVision1.ShipPosition.NONE)) {
                 ShElementPosition = 3;
             }
             //Voltage regulation depending on the battery charge level
@@ -499,10 +498,9 @@ public class BlueLeft extends LinearOpMode {
             sleep(1000);
 
             if (ShElementPosition == 1 && check) {
-                turnTankGyro(33, 0.5);
+                turnTankGyro(-19, 0.5);
+                driveStraightGyro(480, 0.6);
                 sleep(500);
-                driveStraightGyro(755, 0.6);
-                sleep(400);
                 while (true) {
                     motorA.setTargetPosition(firstLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -514,15 +512,14 @@ public class BlueLeft extends LinearOpMode {
                 }
                 driveStraightGyro(200, 0.2);
                 sleep(400);
-                servoA.setPosition(0.35);
+                servoA.setPosition(0.25);
                 sleep(400);
-                driveStraightGyro(-475, 0.6);
+                driveStraightGyro(-500, 0.5);
+                turnTankGyro(109, 0.5);
+                driveStraightGyro(1800, 0.7);
                 sleep(400);
                 servoA.setPosition(0.10);
-                sleep(500);
-                turnTankGyro(-120, 0.5);
-                driveStraightGyro(1800, 0.8);
-                sleep(500);
+                sleep(1000);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -535,9 +532,9 @@ public class BlueLeft extends LinearOpMode {
             }
 
             if (ShElementPosition == 2 && check) {
-                turnTankGyro(30, 0.5);
-                driveStraightGyro(650, 0.6);
-                sleep(400);
+                turnTankGyro(-19, 0.5);
+                driveStraightGyro(500, 0.6);
+                sleep(500);
                 while (true) {
                     motorA.setTargetPosition(secondLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -549,14 +546,14 @@ public class BlueLeft extends LinearOpMode {
                 }
                 driveStraightGyro(200, 0.2);
                 sleep(400);
-                servoA.setPosition(0.35);
+                servoA.setPosition(0.25);
                 sleep(400);
-                driveStraightGyro(-400, 0.6);
-                turnTankGyro(-127, 0.5);
-                driveStraightGyro(1800, 0.8);
+                driveStraightGyro(-500, 0.5);
+                turnTankGyro(109, 0.5);
+                driveStraightGyro(1800, 0.7);
                 sleep(400);
                 servoA.setPosition(0.10);
-                sleep(500);
+                sleep(1000);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -569,8 +566,10 @@ public class BlueLeft extends LinearOpMode {
             }
 
             if (ShElementPosition == 3 && check) {
-                turnTankGyro(30, 0.5);
-                driveStraightGyro(680, 0.6);
+                turnTankGyro(-28, 0.5);
+                driveStraightGyro(500, 0.6);
+                sleep(500);
+                turnTankGyro(9, 0.15);
                 sleep(400);
                 while (true) {
                     motorA.setTargetPosition(thirdLevel);
@@ -581,16 +580,16 @@ public class BlueLeft extends LinearOpMode {
                         break;
                     }
                 }
-                driveStraightGyro(200, 0.2);
+                driveStraightGyro(250, 0.2);
                 sleep(400);
-                servoA.setPosition(0.35);
+                servoA.setPosition(0.25);
                 sleep(400);
-                driveStraightGyro(-400, 0.6);
-                turnTankGyro(-127, 0.5);
-                driveStraightGyro(1800, 0.8);
+                driveStraightGyro(-500, 0.5);
+                turnTankGyro(109, 0.5);
+                driveStraightGyro(1800, 0.7);
                 sleep(400);
                 servoA.setPosition(0.10);
-                sleep(500);
+                sleep(1000);
                 while (true) {
                     motorA.setTargetPosition(-50);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);

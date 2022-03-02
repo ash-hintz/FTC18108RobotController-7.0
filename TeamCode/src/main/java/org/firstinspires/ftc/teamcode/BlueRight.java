@@ -499,7 +499,7 @@ public class BlueRight extends LinearOpMode {
             if (ShElementPosition == 1 && check) {
                 turnTankGyro(49, 0.3);
                 sleep(500);
-                driveStraightGyro(725, 0.6);
+                driveStraightGyro(800, 0.6);
                 sleep(500);
                 turnTankGyro(-10, 0.15);
                 sleep(400);
@@ -512,7 +512,7 @@ public class BlueRight extends LinearOpMode {
                         break;
                     }
                 }
-                driveStraightGyro(250, 0.2);
+                driveStraightGyro(300, 0.2);
                 sleep(300);
                 servoA.setPosition(0.25);
                 sleep(400);
