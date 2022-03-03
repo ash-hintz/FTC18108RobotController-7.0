@@ -90,7 +90,7 @@ public class RedRight extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 600;
+    int firstLevel = 650;
     int secondLevel = 1050;
     int thirdLevel = 1600;
 
