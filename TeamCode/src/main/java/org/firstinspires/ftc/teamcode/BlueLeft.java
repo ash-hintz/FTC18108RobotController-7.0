@@ -90,9 +90,9 @@ public class BlueLeft extends LinearOpMode {
     double globalAngle, startAngle, endAngle, currentAngle;
     double armPower;
     int shippingLevel = 0;
-    int firstLevel = 600;
-    int secondLevel = 1050;
-    int thirdLevel = 1600;
+    int firstLevel = 750;
+    int secondLevel = 1200;
+    int thirdLevel = 1700;
 
     OpenCvCamera webcam;
 
