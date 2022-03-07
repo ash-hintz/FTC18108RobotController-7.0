@@ -92,7 +92,7 @@ public class BlueRight extends LinearOpMode {
     int shippingLevel = 0;
     int firstLevel = 850;
     int secondLevel = 1300;
-    int thirdLevel = 1700;
+    int thirdLevel = 1800;
 
     OpenCvCamera webcam;
 
@@ -501,7 +501,7 @@ public class BlueRight extends LinearOpMode {
                 sleep(500);
                 driveStraightGyro(800, 0.6);
                 sleep(500);
-                turnTankGyro(-12, 0.15);
+                turnTankGyro(-15, 0.15);
                 sleep(400);
                 while (true) {
                     motorA.setTargetPosition(firstLevel);
@@ -551,7 +551,7 @@ public class BlueRight extends LinearOpMode {
             }
 
             if (ShElementPosition == 2 && check) {
-                turnTankGyro(39, 0.3);
+                turnTankGyro(36, 0.3);
                 sleep(500);
                 driveStraightGyro(725, 0.6);
                 sleep(500);
@@ -603,7 +603,7 @@ public class BlueRight extends LinearOpMode {
             }
 
             if (ShElementPosition == 3 & check) {
-                turnTankGyro(39, 0.3);
+                turnTankGyro(36, 0.3);
                 sleep(500);
                 driveStraightGyro(765, 0.6);
                 sleep(400);
