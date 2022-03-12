@@ -536,6 +536,7 @@ public class RedRight extends LinearOpMode {
 
             if (ShElementPosition == 2 && check) {
                 turnTankGyro(30, 0.5);
+                sleep(500);
                 driveStraightGyro(700, 0.6);
                 sleep(400);
                 while (true) {
@@ -570,6 +571,7 @@ public class RedRight extends LinearOpMode {
 
             if (ShElementPosition == 3 && check) {
                 turnTankGyro(30, 0.5);
+                sleep(500);
                 driveStraightGyro(700, 0.6);
                 sleep(400);
                 while (true) {
