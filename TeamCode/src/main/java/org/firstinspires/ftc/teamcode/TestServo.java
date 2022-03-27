@@ -79,10 +79,11 @@ public class TestServo extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private DcMotor motorA = null;
+    private DcMotor motorB = null;
     //private DcMotor motorC = null;
-    private CRServo servoA = null;
-    private CRServo servoB = null;
-    private CRServo servoC = null;
+    //private CRServo servoA = null;
+    //private CRServo servoB = null;
+    //private CRServo servoC = null;
     private BNO055IMU imu;
     Orientation lastAngles = new Orientation();
     double globalAngle, startAngle, endAngle, currentAngle;
@@ -162,10 +163,12 @@ public class TestServo extends LinearOpMode {
         motor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetAngle();
 
         currentAngle = getAngle();
@@ -411,11 +414,12 @@ public class TestServo extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorB = hardwareMap.get(DcMotor.class, "motorB");
         //motorC = hardwareMap.get(DcMotor.class, "motorC");
         // servoA = hardwareMap.get(Servo.class, "servoA");
-        servoA = hardwareMap.get(CRServo.class, "servoA");
-        servoB = hardwareMap.get(CRServo.class, "servoB");
-        servoC = hardwareMap.get(CRServo.class, "servoC");
+        //servoA = hardwareMap.get(CRServo.class, "servoA");
+        //servoB = hardwareMap.get(CRServo.class, "servoB");
+        //servoC = hardwareMap.get(CRServo.class, "servoC");
 
 
 
@@ -427,6 +431,7 @@ public class TestServo extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.REVERSE);
         motor3.setDirection(DcMotor.Direction.FORWARD);
         motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorB.setDirection(DcMotor.Direction.FORWARD);
         //motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -434,6 +439,7 @@ public class TestServo extends LinearOpMode {
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // make sure the IMU gyro is calibrated before continuing.
@@ -447,6 +453,7 @@ public class TestServo extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -454,6 +461,7 @@ public class TestServo extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
@@ -492,8 +500,10 @@ public class TestServo extends LinearOpMode {
 
             // START AUTONOMOUS PROGRAM
 
-            servoA.setPower(1.0);
-            sleep(3000);
+            motorB.setPower(-0.4);
+            sleep(10000);
+            motorB.setPower(0.4);
+            sleep(10000);
 
             // END AUTONOMOUS PROGRAM
         }

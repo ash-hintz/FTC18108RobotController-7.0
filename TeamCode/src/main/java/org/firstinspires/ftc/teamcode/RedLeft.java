@@ -91,8 +91,8 @@ public class RedLeft extends LinearOpMode {
     double armPower;
     int shippingLevel = 0;
     int firstLevel = 750;
-    int secondLevel = 1200;
-    int thirdLevel = 1700;
+    int secondLevel = 1150;
+    int thirdLevel = 1800;
 
     OpenCvCamera webcam;
 
@@ -516,11 +516,11 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-500, 0.5);
                 turnTankGyro(-60, 0.5);
-                driveStraightGyro(-1320, 0.7);
+                driveStraightGyro(-1180, 0.7);
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);
-                motorC.setPower(0.07);
+                motorC.setPower(0.08);
                 while (true) {
                     if (motorC.getCurrentPosition() >= 450) {
                         motorC.setPower(0.0);
@@ -566,7 +566,7 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-500, 0.5);
                 turnTankGyro(-60, 0.5);
-                driveStraightGyro(-1320, 0.7);
+                driveStraightGyro(-1180, 0.7);
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);
@@ -599,7 +599,7 @@ public class RedLeft extends LinearOpMode {
 
             if (ShElementPosition == 3 && check) {
                 turnTankGyro(-22.5, 0.5);
-                driveStraightGyro(530, 0.6);
+                driveStraightGyro(600, 0.6);
                 sleep(500);
                 while (true) {
                     motorA.setTargetPosition(thirdLevel);
@@ -616,7 +616,7 @@ public class RedLeft extends LinearOpMode {
                 sleep(400);
                 driveStraightGyro(-500, 0.5);
                 turnTankGyro(-55, 0.5);
-                driveStraightGyro(-1350, 0.7);
+                driveStraightGyro(-1180, 0.7);
                 sleep(400);
                 driveStraightGyro(-200, 0.15);
                 sleep(400);

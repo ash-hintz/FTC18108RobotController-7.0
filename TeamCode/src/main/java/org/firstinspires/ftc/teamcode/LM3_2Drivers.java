@@ -63,6 +63,7 @@ public class LM3_2Drivers extends LinearOpMode {
     private DcMotor motor2 = null;
     private DcMotor motor3 = null;
     private DcMotor motorA = null;
+    private DcMotor motorB = null;
     private DcMotor motorC = null;
     private Servo servoA;
     private CRServo servoB;
@@ -89,9 +90,12 @@ public class LM3_2Drivers extends LinearOpMode {
     double leftPower;
     double rightPower;
     double armPower;
+    double slidePower;
     double armHeightMin = -10;
     double armHeightMax = 2150;
-    double carouselPower = 0.08;
+    double slideMaxHeight = 0;
+    double slideMinHeight = 1000;
+    double carouselPower = 0.09;
 
 
     // Local variable to control Arm / Carousel / Class
@@ -113,6 +117,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motor2 = hardwareMap.get(DcMotor.class, "motor2");
         motor3 = hardwareMap.get(DcMotor.class, "motor3");
         motorA = hardwareMap.get(DcMotor.class, "motorA");
+        motorB = hardwareMap.get(DcMotor.class, "motorB");
         motorC = hardwareMap.get(DcMotor.class, "motorC");
         servoA = hardwareMap.get(Servo.class, "servoA");
         servoB = hardwareMap.get(CRServo.class, "servoB");
@@ -124,6 +129,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motor2.setDirection(DcMotor.Direction.FORWARD);
         motor3.setDirection(DcMotor.Direction.REVERSE);
         motorA.setDirection(DcMotor.Direction.FORWARD);
+        motorB.setDirection(DcMotor.Direction.FORWARD);
         motorC.setDirection(DcMotor.Direction.FORWARD);
 
         motor0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -131,6 +137,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motor3.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorA.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorC.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         motor0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -138,6 +145,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motor3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorA.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorB.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorC.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         motor0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -145,6 +153,7 @@ public class LM3_2Drivers extends LinearOpMode {
         motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motor3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorA.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorC.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set both servos to the starting position
@@ -168,8 +177,8 @@ public class LM3_2Drivers extends LinearOpMode {
             }
 
             else {
-                leftPower = Range.clip(drive + turn, -0.75, 0.75);
-                rightPower = Range.clip(drive - turn, -0.75, 0.75);
+                leftPower = Range.clip(drive + turn, -0.8, 0.8);
+                rightPower = Range.clip(drive - turn, -0.8, 0.8);
             }
 
             // Send calculated power to wheels
@@ -178,7 +187,7 @@ public class LM3_2Drivers extends LinearOpMode {
             motor2.setPower(leftPower);
             motor3.setPower(rightPower);
 
-            // Set arm the right
+            // Set arm the right.
             double armJoyStick = -gamepad2.right_stick_y;
             armPower = Range.clip(armJoyStick, -0.75, 0.75);
             telemetry.addData("Arm", "Power (%.2f), Position (%3d)", armPower, motorA.getCurrentPosition());
@@ -192,6 +201,11 @@ public class LM3_2Drivers extends LinearOpMode {
             else {
                 motorA.setPower(-1 * armPower);
             }
+
+
+            double linearSlides = gamepad2.left_stick_y;
+            slidePower = Range.clip(linearSlides, -0.3, 0.3);
+            motorB.setPower(-1 * slidePower);
 
             // Turn the Red Carousel On / Off
 
@@ -236,7 +250,6 @@ public class LM3_2Drivers extends LinearOpMode {
             if (gamepad2.dpad_right) {
                 servoB.setPower(0.0);
             }
-
 
 
             // Set the servo to the new position and pause;

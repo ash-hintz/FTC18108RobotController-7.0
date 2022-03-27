@@ -510,6 +510,7 @@ public class BlueLeft extends LinearOpMode {
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(200, 0.2);
                 sleep(400);
                 servoA.setPosition(0.25);
@@ -544,6 +545,7 @@ public class BlueLeft extends LinearOpMode {
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(200, 0.2);
                 sleep(400);
                 servoA.setPosition(0.25);
@@ -580,6 +582,7 @@ public class BlueLeft extends LinearOpMode {
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(250, 0.2);
                 sleep(400);
                 servoA.setPosition(0.25);

@@ -502,8 +502,7 @@ public class RedRight extends LinearOpMode {
                 turnTankGyro(33, 0.5);
                 sleep(500);
                 driveStraightGyro(700, 0.6);
-                sleep(400);
-                while (true) {
+                sleep(400);while (true) {
                     motorA.setTargetPosition(firstLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     motorA.setPower(0.4);
@@ -512,6 +511,7 @@ public class RedRight extends LinearOpMode {
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(200, 0.2);
                 sleep(400);
                 servoA.setPosition(0.35);
@@ -542,12 +542,13 @@ public class RedRight extends LinearOpMode {
                 while (true) {
                     motorA.setTargetPosition(secondLevel);
                     motorA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorA.setPower(0.4);
+                    motorA.setPower(0.55);
                     if (motorA.getCurrentPosition() >= motorA.getTargetPosition()) {
                         motorA.setPower(0.0);
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(200, 0.2);
                 sleep(400);
                 servoA.setPosition(0.35);
@@ -583,6 +584,7 @@ public class RedRight extends LinearOpMode {
                         break;
                     }
                 }
+                sleep(400);
                 driveStraightGyro(200, 0.2);
                 sleep(400);
                 servoA.setPosition(0.35);
